@@ -2146,6 +2146,12 @@ func init() {
           "type": "integer",
           "maximum": 65535
         },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "disabled": {
           "type": "boolean",
           "x-nullable": true
@@ -2191,6 +2197,12 @@ func init() {
             "cost": {
               "type": "integer",
               "maximum": 65535
+            },
+            "ctrlChanListeners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             "disabled": {
               "type": "boolean"
@@ -2252,6 +2264,12 @@ func init() {
           "maximum": 65535,
           "x-nullable": true
         },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "disabled": {
           "type": "boolean",
           "x-nullable": true
@@ -2284,6 +2302,12 @@ func init() {
         "cost": {
           "type": "integer",
           "maximum": 65535
+        },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "disabled": {
           "type": "boolean",
@@ -7949,6 +7973,12 @@ func init() {
           "maximum": 65535,
           "minimum": 0
         },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "disabled": {
           "type": "boolean",
           "x-nullable": true
@@ -7995,6 +8025,12 @@ func init() {
               "type": "integer",
               "maximum": 65535,
               "minimum": 0
+            },
+            "ctrlChanListeners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
             },
             "disabled": {
               "type": "boolean"
@@ -8057,6 +8093,12 @@ func init() {
           "minimum": 0,
           "x-nullable": true
         },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "disabled": {
           "type": "boolean",
           "x-nullable": true
@@ -8090,6 +8132,12 @@ func init() {
           "type": "integer",
           "maximum": 65535,
           "minimum": 0
+        },
+        "ctrlChanListeners": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "disabled": {
           "type": "boolean",

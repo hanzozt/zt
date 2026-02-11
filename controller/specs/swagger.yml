@@ -1624,6 +1624,10 @@ definitions:
             type: array
             items:
               $ref: '#/definitions/interface'
+          ctrlChanListeners:
+            type: array
+            items:
+              type: string
   routerListener:
     type: object
     required:
@@ -1658,6 +1662,10 @@ definitions:
       disabled:
         type: boolean
         x-nullable: true
+      ctrlChanListeners:
+        type: array
+        items:
+          type: string
       tags:
         $ref: '#/definitions/tags'
   routerUpdate:
@@ -1681,6 +1689,10 @@ definitions:
       disabled:
         type: boolean
         x-nullable: true
+      ctrlChanListeners:
+        type: array
+        items:
+          type: string
       tags:
         $ref: '#/definitions/tags'
   routerPatch:
@@ -1702,6 +1714,10 @@ definitions:
       disabled:
         type: boolean
         x-nullable: true
+      ctrlChanListeners:
+        type: array
+        items:
+          type: string
       tags:
         $ref: '#/definitions/tags'
 
