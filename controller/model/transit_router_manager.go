@@ -308,7 +308,7 @@ func (self *TransitRouterManager) TransitRouterToProtobuf(entity *TransitRouter)
 		UnverifiedCertPem:     entity.UnverifiedCertPem,
 		Cost:                  uint32(entity.Cost),
 		NoTraversal:           entity.NoTraversal,
-		CtrlChanListeners:     entity.CtrlChanListeners,
+		CtrlChanListeners:     edge_cmd_pb.EncodeCtrlChanListeners(entity.CtrlChanListeners),
 	}
 
 	return msg, nil
@@ -335,7 +335,7 @@ func (self *TransitRouterManager) ProtobufToTransitRouter(msg *edge_cmd_pb.Trans
 		UnverifiedCertPem:     msg.UnverifiedCertPem,
 		Cost:                  uint16(msg.Cost),
 		NoTraversal:           msg.NoTraversal,
-		CtrlChanListeners:     msg.CtrlChanListeners,
+		CtrlChanListeners:     edge_cmd_pb.DecodeCtrlChanListeners(msg.CtrlChanListeners),
 	}, nil
 }
 

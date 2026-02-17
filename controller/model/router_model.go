@@ -49,7 +49,7 @@ type Router struct {
 	Cost              uint16
 	NoTraversal       bool
 	Disabled          bool
-	CtrlChanListeners []string
+	CtrlChanListeners map[string][]string
 	Metadata          *ctrl_pb.RouterMetadata
 	Interfaces        []*Interface
 }

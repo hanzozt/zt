@@ -56,7 +56,7 @@ type RouterDetail struct {
 	Cost *int64 `json:"cost"`
 
 	// ctrl chan listeners
-	CtrlChanListeners []string `json:"ctrlChanListeners"`
+	CtrlChanListeners map[string][]string `json:"ctrlChanListeners"`
 
 	// disabled
 	// Required: true
@@ -99,7 +99,7 @@ func (m *RouterDetail) UnmarshalJSON(raw []byte) error {
 
 		Cost *int64 `json:"cost"`
 
-		CtrlChanListeners []string `json:"ctrlChanListeners"`
+		CtrlChanListeners map[string][]string `json:"ctrlChanListeners"`
 
 		Disabled *bool `json:"disabled"`
 
@@ -156,7 +156,7 @@ func (m RouterDetail) MarshalJSON() ([]byte, error) {
 
 		Cost *int64 `json:"cost"`
 
-		CtrlChanListeners []string `json:"ctrlChanListeners"`
+		CtrlChanListeners map[string][]string `json:"ctrlChanListeners"`
 
 		Disabled *bool `json:"disabled"`
 

@@ -58,6 +58,7 @@ enum ControlHeaders {
   ListenersHeader = 10;
   RouterMetadataHeader = 11;
   CapabilitiesHeader = 12;
+  CtrlChanListenersHeader = 13;
 }
 
 enum RouterCapability {
@@ -328,4 +329,13 @@ message Alert {
 
 message Alerts {
   repeated Alert alerts = 1;
+}
+
+message CtrlChanListener {
+    string address = 1;
+    repeated string groups = 2;
+}
+
+message CtrlChanListeners {
+    repeated CtrlChanListener listeners = 1;
 }
