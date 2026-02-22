@@ -41,7 +41,10 @@ func TestDownloadFiles(t *testing.T) {
 		}
 	}
 
-	waitForTerminators(t, 30*time.Second, "ert-files", "zet-files", "zt-tunnel-files")
+	waitForTerminators(t, 30*time.Second,
+		"ert-files", "ert-files-unencrypted",
+		"zet-files", "zet-files-unencrypted",
+		"zt-tunnel-files", "zt-tunnel-files-unencrypted")
 
 	t.Run("download-tests", func(t *testing.T) {
 		t.Run("test-ert-downloads", func(t *testing.T) {

@@ -825,10 +825,10 @@ func (network *Network) selectPath(params model.CreateCircuitParams, svc *model.
 		buf := strings.Builder{}
 		buf.WriteString("[")
 		if len(weightedTerminators) > 0 {
-			buf.WriteString(fmt.Sprintf("%v: %v", weightedTerminators[0].GetId(), weightedTerminators[0].GetRouteCost()))
+			fmt.Fprintf(&buf, "%v: %v", weightedTerminators[0].GetId(), weightedTerminators[0].GetRouteCost())
 			for _, t := range weightedTerminators[1:] {
 				buf.WriteString(", ")
-				buf.WriteString(fmt.Sprintf("%v: %v", t.GetId(), t.GetRouteCost()))
+				fmt.Fprintf(&buf, "%v: %v", t.GetId(), t.GetRouteCost())
 			}
 		}
 		buf.WriteString("]")

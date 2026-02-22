@@ -19,8 +19,8 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/michaelquigley/pfxlog v1.0.0
-	github.com/hanzozt/agent v1.0.33
-	github.com/hanzozt/channel/v4 v4.3.4
+github.com/hanzozt/agent v1.0.33
+	github.com/hanzozt/channel/v4 v4.3.5
 	github.com/hanzozt/edge-api v0.26.52
 	github.com/hanzozt/fablab v0.6.1
 	github.com/hanzozt/foundation/v2 v2.0.87

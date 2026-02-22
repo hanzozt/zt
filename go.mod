@@ -60,8 +60,8 @@ require (
 	github.com/miekg/dns v1.1.72
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-	github.com/hanzozt/agent v1.0.33
-	github.com/hanzozt/channel/v4 v4.3.4
+github.com/hanzozt/agent v1.0.33
+	github.com/hanzozt/channel/v4 v4.3.5
 	github.com/hanzozt/cobra-to-md v1.0.1
 	github.com/hanzozt/edge-api v0.26.52
 	github.com/hanzozt/foundation/v2 v2.0.87
