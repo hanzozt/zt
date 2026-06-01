@@ -1,6 +1,0 @@
-services:
-  zt-router:
-    networks:
-      - zt
-    volumes:
-      - zt-test:/home/ziggy/.config/zt

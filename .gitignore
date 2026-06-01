@@ -36,3 +36,7 @@ doc/ha/data
 simple-transfer-*/
 etc/endpoints
 etc/endpoints.yml
+dist/
+.next/
+target/
+.turbo/
