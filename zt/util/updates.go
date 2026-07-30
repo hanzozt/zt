@@ -36,7 +36,7 @@ func LogReleaseVersionCheck() {
 	if strings.ToLower(os.Getenv("ZITI_CHECK_VERSION")) == "true" {
 		logger.Debug("ZITI_CHECK_VERSION is true. starting version check")
 		developmentSemver, _ := semver.Parse("0.0.0")
-		latestGithubRelease, err := getzt.GetHighestVersionGitHubReleaseInfo(constants.Hanzo ZTOrg, constants.ZITI, false)
+		latestGithubRelease, err := getzt.GetHighestVersionGitHubReleaseInfo(constants.HanzoZTOrg, constants.ZITI, false)
 		if err != nil {
 			logger.Debugf("failed to find latest GitHub version with error: %s", err)
 			return // soft-fail version check if GitHub API is unavailable

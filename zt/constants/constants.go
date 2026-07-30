@@ -19,7 +19,7 @@ package constants
 import "time"
 
 const (
-	Hanzo ZTOrg             = "hanzozt"
+	HanzoZTOrg              = "hanzozt"
 	ZITI                    = "zt"
 	ZROK                    = "zrok"
 	CaddyOrg                = "caddyserver"

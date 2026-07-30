@@ -201,7 +201,7 @@ func (self *SessionManager) CreateJwt(entity *Session, isLegacy bool) (string, e
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    self.env.RootIssuer(),
 			Subject:   entity.ServiceId,
-			Audience:  jwt.ClaimStrings{common.ClaimAudienceHanzo ZT},
+			Audience:  jwt.ClaimStrings{common.ClaimAudienceHanzoZT},
 			IssuedAt:  &jwt.NumericDate{Time: time.Now()},
 			ID:        entity.Id,
 			ExpiresAt: &jwt.NumericDate{Time: time.Now().AddDate(1, 0, 0)}, //bound by API Session

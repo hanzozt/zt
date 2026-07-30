@@ -5,8 +5,6 @@ go 1.25.3
 // pinned
 replace github.com/michaelquigley/pfxlog => github.com/michaelquigley/pfxlog v0.6.10
 
-replace github.com/hanzozt/foundation/v2 => github.com/hanzozt/foundation/v2 v2.0.86
-
 require (
 	github.com/AppsFlyer/go-sundheit v0.6.0
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.21.0
@@ -45,6 +43,22 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/securecookie v1.1.2
 	github.com/gorilla/websocket v1.5.3
+	github.com/hanzozt/agent v1.0.35
+	github.com/hanzozt/channel/v4 v4.3.10
+	github.com/hanzozt/cobra-to-md v1.0.3
+	github.com/hanzozt/edge-api v0.27.7
+	github.com/hanzozt/foundation/v2 v2.0.92
+	github.com/hanzozt/identity v1.0.129
+	github.com/hanzozt/jwks v1.0.8
+	github.com/hanzozt/metrics v1.4.6
+	github.com/hanzozt/runzmd v1.0.91
+	github.com/hanzozt/sdk-golang v1.6.1
+	github.com/hanzozt/secretstream v0.1.51
+	github.com/hanzozt/storage v0.4.40
+	github.com/hanzozt/transport/v2 v2.0.216
+	github.com/hanzozt/x509-claims v1.0.5
+	github.com/hanzozt/xweb/v3 v3.0.5
+	github.com/hanzozt/zt-db-explorer v1.1.5
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/hashicorp/raft v1.7.3
@@ -60,22 +74,6 @@ require (
 	github.com/miekg/dns v1.1.72
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
-github.com/hanzozt/agent v1.0.33
-	github.com/hanzozt/channel/v4 v4.3.5
-	github.com/hanzozt/cobra-to-md v1.0.1
-	github.com/hanzozt/edge-api v0.26.52
-	github.com/hanzozt/foundation/v2 v2.0.87
-	github.com/hanzozt/identity v1.0.125
-	github.com/hanzozt/jwks v1.0.6
-	github.com/hanzozt/metrics v1.4.3
-	github.com/hanzozt/runzmd v1.0.88
-	github.com/hanzozt/sdk-golang v1.4.1
-	github.com/hanzozt/secretstream v0.1.47
-	github.com/hanzozt/storage v0.4.37
-	github.com/hanzozt/transport/v2 v2.0.209
-	github.com/hanzozt/x509-claims v1.0.3
-	github.com/hanzozt/xweb/v3 v3.0.3
-	github.com/hanzozt/zt-db-explorer v1.1.3
 	github.com/orcaman/concurrent-map/v2 v2.0.1
 	github.com/pkg/errors v0.9.1
 	github.com/rabbitmq/amqp091-go v1.10.0
@@ -94,14 +92,14 @@ github.com/hanzozt/agent v1.0.33
 	go.etcd.io/bbolt v1.4.3
 	go.uber.org/atomic v1.11.0
 	go4.org v0.0.0-20260112195520-a5071408f32f
-	golang.org/x/crypto v0.48.0
+	golang.org/x/crypto v0.54.0
 	golang.org/x/exp v0.0.0-20260112195511-716be5621a96
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.56.0
 	golang.org/x/oauth2 v0.35.0
-	golang.org/x/sync v0.19.0
-	golang.org/x/sys v0.41.0
-	golang.org/x/term v0.40.0
-	golang.org/x/text v0.34.0
+	golang.org/x/sync v0.22.0
+	golang.org/x/sys v0.47.0
+	golang.org/x/term v0.45.0
+	golang.org/x/text v0.40.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/AlecAivazis/survey.v1 v1.8.8
 	gopkg.in/resty.v1 v1.12.0
@@ -153,6 +151,8 @@ require (
 	github.com/go-openapi/swag/yamlutils v0.25.4 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/gomarkdown/markdown v0.0.0-20250810172220-2e2c11897d1a // indirect
+	github.com/hanzozt/dilithium v0.3.7 // indirect
+	github.com/hanzozt/go-term-markdown v1.0.3 // indirect
 	github.com/hashicorp/go-immutable-radix v1.3.1 // indirect
 	github.com/hashicorp/go-metrics v0.5.4 // indirect
 	github.com/hashicorp/go-msgpack/v2 v2.1.5 // indirect
@@ -174,9 +174,7 @@ require (
 	github.com/muhlemmer/gu v0.3.1 // indirect
 	github.com/muhlemmer/httpforwarded v0.1.0 // indirect
 	github.com/oklog/ulid v1.3.1 // indirect
-	github.com/hanzozt-incubator/cf v0.0.3 // indirect
-	github.com/hanzozt/dilithium v0.3.5 // indirect
-	github.com/hanzozt/go-term-markdown v1.0.1 // indirect
+	github.com/openziti-incubator/cf v0.0.3 // indirect
 	github.com/parallaxsecond/parsec-client-go v0.0.0-20221025095442-f0a77d263cf9 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/pion/dtls/v3 v3.0.10 // indirect
@@ -210,8 +208,8 @@ require (
 	go.opentelemetry.io/otel/metric v1.40.0 // indirect
 	go.opentelemetry.io/otel/trace v1.40.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	golang.org/x/mod v0.32.0 // indirect
-	golang.org/x/tools v0.41.0 // indirect
+	golang.org/x/mod v0.37.0 // indirect
+	golang.org/x/tools v0.47.0 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0 // indirect
 	nhooyr.io/websocket v1.8.17 // indirect
 )

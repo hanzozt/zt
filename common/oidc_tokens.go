@@ -27,8 +27,8 @@ import (
 )
 
 const (
-	ClaimClientIdHanzo ZT = "hanzozt"
-	ClaimAudienceHanzo ZT = "hanzozt"
+	ClaimClientIdHanzoZT = "hanzozt"
+	ClaimAudienceHanzoZT = "hanzozt"
 
 	//ClaimLegacyNative - to remove after SDKs stop using this as a client id
 	ClaimLegacyNative = "native"
