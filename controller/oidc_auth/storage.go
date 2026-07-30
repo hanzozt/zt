@@ -1069,7 +1069,7 @@ func (s *HybridStorage) ValidateTokenExchangeRequest(_ context.Context, request 
 	}
 
 	for _, aud := range request.GetAudience() {
-		if aud != common.ClaimAudienceHanzo ZT && aud != common.ClaimLegacyNative {
+		if aud != common.ClaimAudienceHanzoZT && aud != common.ClaimLegacyNative {
 			return fmt.Errorf("invalid audience requested [%s]", aud)
 		}
 	}

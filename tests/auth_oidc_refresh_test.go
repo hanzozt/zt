@@ -211,8 +211,8 @@ func Test_Authenticate_OIDC_Refresh(t *testing.T) {
 
 			oidcApiSession := apiSession.(*edge_apis.ApiSessionOidc)
 
-			clientId := common.ClaimAudienceHanzo ZT
-			if oidcApiSession.OidcTokens.IDTokenClaims.ClientID == common.ClaimAudienceHanzo ZT {
+			clientId := common.ClaimAudienceHanzoZT
+			if oidcApiSession.OidcTokens.IDTokenClaims.ClientID == common.ClaimAudienceHanzoZT {
 				clientId = common.ClaimLegacyNative
 			}
 			req := &oidc.RefreshTokenRequest{

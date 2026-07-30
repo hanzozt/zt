@@ -458,8 +458,8 @@ func (self *ManagerImpl) ParseTotpToken(jwtStr string) (*common.TotpClaims, erro
 		return nil, err
 	}
 
-	if !totpClaims.HasAudience(common.ClaimAudienceHanzo ZT) && !totpClaims.HasAudience(common.ClaimLegacyNative) {
-		return nil, fmt.Errorf("provided a totp token with invalid audience '%s' of type [%T], expected: %s or %s", totpClaims.Audience, totpClaims.Audience, common.ClaimAudienceHanzo ZT, common.ClaimLegacyNative)
+	if !totpClaims.HasAudience(common.ClaimAudienceHanzoZT) && !totpClaims.HasAudience(common.ClaimLegacyNative) {
+		return nil, fmt.Errorf("provided a totp token with invalid audience '%s' of type [%T], expected: %s or %s", totpClaims.Audience, totpClaims.Audience, common.ClaimAudienceHanzoZT, common.ClaimLegacyNative)
 	}
 
 	if totpClaims.Type != common.TokenTypeTotp {
@@ -863,8 +863,8 @@ func (self *ManagerImpl) ParseApiSessionJwt(jwtStr string) (*ApiSessionToken, er
 		return nil, err
 	}
 
-	if !accessClaims.HasAudience(common.ClaimAudienceHanzo ZT) && !accessClaims.HasAudience(common.ClaimLegacyNative) {
-		return nil, fmt.Errorf("provided an api session token with invalid audience '%s' of type [%T], expected: %s or %s", accessClaims.Audience, accessClaims.Audience, common.ClaimAudienceHanzo ZT, common.ClaimLegacyNative)
+	if !accessClaims.HasAudience(common.ClaimAudienceHanzoZT) && !accessClaims.HasAudience(common.ClaimLegacyNative) {
+		return nil, fmt.Errorf("provided an api session token with invalid audience '%s' of type [%T], expected: %s or %s", accessClaims.Audience, accessClaims.Audience, common.ClaimAudienceHanzoZT, common.ClaimLegacyNative)
 	}
 
 	if accessClaims.Type != common.TokenTypeAccess {

@@ -74,7 +74,7 @@ func NewNativeOnlyOP(ctx context.Context, env model.Env, config Config) (http.Ha
 	rootSigner := env.GetRootTlsJwtSigner()
 	config.Storage = NewStorage(rootSigner, &config, env)
 
-	hanzoztClient := NativeClient(common.ClaimClientIdHanzo ZT, config.RedirectURIs, config.PostLogoutURIs)
+	hanzoztClient := NativeClient(common.ClaimClientIdHanzoZT, config.RedirectURIs, config.PostLogoutURIs)
 	hanzoztClient.idTokenDuration = config.IdTokenDuration
 	hanzoztClient.loginURL = newLoginResolver(config.Storage)
 	config.Storage.AddClient(hanzoztClient)

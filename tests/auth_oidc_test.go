@@ -78,7 +78,7 @@ func newOidcTestRp(apiHost string) (*testRpServer, error) {
 	key := []byte("test1234test1234")
 	urlBase := "https://" + apiHost
 	issuer := urlBase + "/oidc"
-	clientID := common.ClaimClientIdHanzo ZT
+	clientID := common.ClaimClientIdHanzoZT
 	clientSecret := ""
 	scopes := []string{"openid", "offline_access"}
 	result.CallbackUri = "http://127.0.0.1:" + result.Port + result.CallbackPath
