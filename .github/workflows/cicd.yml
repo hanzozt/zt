@@ -8,5 +8,8 @@ on:
   workflow_dispatch:
 jobs:
   cicd:
+    permissions:
+      contents: write
+      packages: write
     uses: hanzoai/ci/.github/workflows/build.yml@v2
     secrets: inherit
