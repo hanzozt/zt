@@ -1,0 +1,17 @@
+# ZT: one image carrying both roles, `zt controller` and `zt router`.
+version: 1.7.3
+images:
+  - name: zt
+    context: .
+    dockerfile: Dockerfile
+    repo: ghcr.io/hanzozt/zt
+    platforms: [linux/amd64, linux/arm64]
+    args:
+      VERSION: '${VERSION}'
+      REVISION: '${SHA}'
+
+test:
+  - name: go-vet
+    run: go vet ./...
+  - name: go-unit
+    run: go test -count=1 ./...

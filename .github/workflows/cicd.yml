@@ -1,0 +1,12 @@
+# Every knob lives in /hanzo.yml.
+name: CI/CD
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+jobs:
+  cicd:
+    uses: hanzoai/ci/.github/workflows/build.yml@v2
+    secrets: inherit
