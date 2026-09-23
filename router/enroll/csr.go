@@ -54,3 +54,22 @@ func CreateCsr(key crypto.PrivateKey, algo x509.SignatureAlgorithm, subj *pkix.N
 
 	return string(outBuff), nil
 }
+
+// csrSubject names cn with the CSR attributes c sets. An unset attribute is
+// left out, since an empty value is not a DirectoryString (RFC 5280 §4.1.2.4).
+func csrSubject(cn string, c *env.Csr) *pkix.Name {
+	rdn := func(s string) []string {
+		if s == "" {
+			return nil
+		}
+		return []string{s}
+	}
+	return &pkix.Name{
+		CommonName:         cn,
+		Country:            rdn(c.Country),
+		Province:           rdn(c.Province),
+		Locality:           rdn(c.Locality),
+		Organization:       rdn(c.Organization),
+		OrganizationalUnit: rdn(c.OrganizationalUnit),
+	}
+}

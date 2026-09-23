@@ -67,7 +67,7 @@ func (o *PKICreateCSROptions) addPKICreateCSRFlags(cmd *cobra.Command) {
 	err := o.viper.BindPFlag("csr_file", cmd.Flags().Lookup("csr-file"))
 	o.panicOnErr(err)
 
-	cmd.Flags().StringVarP(&o.Flags.CSRName, "csr-name", "", "NetFoundry Inc. CSR", "Name of CSR")
+	cmd.Flags().StringVarP(&o.Flags.CSRName, "csr-name", "", "Hanzo AI CSR", "Name of CSR")
 	cmd.Flags().StringVarP(&o.Flags.KeyName, "key-name", "", "", "Name of file that contains private key for CSR")
 	cmd.Flags().IntVarP(&o.Flags.CAExpire, "expire-limit", "", 365, "Expiration limit in days")
 	cmd.Flags().IntVarP(&o.Flags.CAMaxPath, "max-path-len", "", -1, "Intermediate maximum path length")

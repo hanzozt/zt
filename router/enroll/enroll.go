@@ -20,7 +20,6 @@ import (
 	"crypto"
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -118,14 +117,7 @@ func (re *RestEnroller) Enroll(jwtBuf []byte, silent bool, engine string, keyAlg
 		return fmt.Errorf("could not obtain private key: %s", err)
 	}
 
-	subject := &pkix.Name{
-		CommonName:         ec.Subject,
-		Country:            []string{re.config.Csr.Country},
-		Province:           []string{re.config.Csr.Province},
-		Locality:           []string{re.config.Csr.Locality},
-		Organization:       []string{re.config.Csr.Organization},
-		OrganizationalUnit: []string{re.config.Csr.OrganizationalUnit},
-	}
+	subject := csrSubject(ec.Subject, re.config.Csr)
 
 	serverCsr, err := CreateCsr(key, x509.UnknownSignatureAlgorithm, subject, re.config.Csr.Sans)
 

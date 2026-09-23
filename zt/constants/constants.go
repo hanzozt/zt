@@ -47,9 +47,9 @@ const (
 	DefaultCtrlEdgeAdvertisedPort = "1280"
 
 	DefaultEdgeRouterCsrC  = "US"
-	DefaultEdgeRouterCsrST = "NC"
-	DefaultEdgeRouterCsrL  = "Charlotte"
-	DefaultEdgeRouterCsrO  = "NetFoundry"
+	DefaultEdgeRouterCsrST = ""
+	DefaultEdgeRouterCsrL  = ""
+	DefaultEdgeRouterCsrO  = "Hanzo AI"
 	DefaultEdgeRouterCsrOU = "ZT"
 )
 

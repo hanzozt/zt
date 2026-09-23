@@ -69,6 +69,7 @@ func TestNoTrustDomain(t *testing.T) {
 	assert.Nil(t, e)
 
 	assert.Empty(t, bundle.Cert.URIs)
+	assert.Equal(t, "CN="+name+",OU=ZT,O=Hanzo AI,C=US", bundle.Cert.Subject.String())
 }
 
 func TestTrustDomainSpiffeAppended(t *testing.T) {

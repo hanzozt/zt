@@ -64,11 +64,11 @@ func (options *PKICreateOptions) addPKICreateFlags(cmd *cobra.Command) {
 	err := options.viper.BindPFlag("pki_root", cmd.PersistentFlags().Lookup("pki-root"))
 	options.panicOnErr(err)
 
-	cmd.PersistentFlags().StringVarP(&options.Flags.PKIOrganization, "pki-organization", "", "NetFoundry", "Organization")
+	cmd.PersistentFlags().StringVarP(&options.Flags.PKIOrganization, "pki-organization", "", "Hanzo AI", "Organization")
 	err = options.viper.BindPFlag("pki-organization", cmd.PersistentFlags().Lookup("pki-organization"))
 	options.panicOnErr(err)
 
-	cmd.PersistentFlags().StringVarP(&options.Flags.PKIOrganizationalUnit, "pki-organizational-unit", "", "ADV-DEV", "Organization unit")
+	cmd.PersistentFlags().StringVarP(&options.Flags.PKIOrganizationalUnit, "pki-organizational-unit", "", "ZT", "Organization unit")
 	err = options.viper.BindPFlag("pki-organizational-unit", cmd.PersistentFlags().Lookup("pki-organizational-unit"))
 	options.panicOnErr(err)
 
@@ -76,21 +76,13 @@ func (options *PKICreateOptions) addPKICreateFlags(cmd *cobra.Command) {
 	err = options.viper.BindPFlag("pki-country", cmd.PersistentFlags().Lookup("pki-country"))
 	options.panicOnErr(err)
 
-	cmd.PersistentFlags().StringVarP(&options.Flags.PKILocality, "pki-locality", "", "Charlotte", "Locality/Location")
+	cmd.PersistentFlags().StringVarP(&options.Flags.PKILocality, "pki-locality", "", "", "Locality/Location")
 	err = options.viper.BindPFlag("pki-locality", cmd.PersistentFlags().Lookup("pki-locality"))
 	options.panicOnErr(err)
 
-	// cmd.PersistentFlags().StringVarP(&options.Flags.PKILocality, "pki-location", "", "Charlotte", "Location/Locality")
-	// cmd.MarkFlagRequired("pki-location")
-	// options.viper.BindPFlag("pki-location", cmd.PersistentFlags().Lookup("pki-location"))
-
-	cmd.PersistentFlags().StringVarP(&options.Flags.PKIProvince, "pki-province", "", "NC", "Province/State")
+	cmd.PersistentFlags().StringVarP(&options.Flags.PKIProvince, "pki-province", "", "", "Province/State")
 	err = options.viper.BindPFlag("pki-province", cmd.PersistentFlags().Lookup("pki-province"))
 	options.panicOnErr(err)
-
-	// cmd.PersistentFlags().StringVarP(&options.Flags.PKIProvince, "pki-state", "", "NC", "State/Province")
-	// cmd.MarkFlagRequired("pki-state")
-	// options.viper.BindPFlag("pki-state", cmd.PersistentFlags().Lookup("pki-state"))
 }
 
 // Run implements this command
@@ -293,7 +285,7 @@ func (o *PKICreateOptions) ObtainPKIRequestTemplate(commonName string) *x509.Cer
 	if str := o.viper.GetString("pki-country"); str != "" {
 		subject.Country = []string{str}
 	}
-	if str := o.viper.GetString("pki-state"); str != "" {
+	if str := o.viper.GetString("pki-province"); str != "" {
 		subject.Province = []string{str}
 	}
 	if str := o.viper.GetString("pki-organizational-unit"); str != "" {
@@ -346,7 +338,7 @@ func (o *PKICreateOptions) ObtainPKICSRRequestTemplate(commonName string) *x509.
 	if str := o.viper.GetString("pki-country"); str != "" {
 		subject.Country = []string{str}
 	}
-	if str := o.viper.GetString("pki-state"); str != "" {
+	if str := o.viper.GetString("pki-province"); str != "" {
 		subject.Province = []string{str}
 	}
 	if str := o.viper.GetString("pki-organizational-unit"); str != "" {
