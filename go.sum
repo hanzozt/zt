@@ -371,8 +371,8 @@ github.com/hanzozt/metrics v1.4.6 h1:DqXq1wor5Gi5KXx1yI1oB8oeDcNuX8IqqyD9lwphDZI
 github.com/hanzozt/metrics v1.4.6/go.mod h1:vKiVUpb5wCmBUc+JpMLwl6p58QzWbrM3BZc3io3ULLM=
 github.com/hanzozt/runzmd v1.0.91 h1:pYR5TPs+lT1cBxOkW99fGisk78ST6oh5cFRLkMSLH/U=
 github.com/hanzozt/runzmd v1.0.91/go.mod h1:q7vRyh/akjk1TQcNnf5w5ZDYsA3yp+blSLN7KiM8vH0=
-github.com/hanzozt/sdk-golang v1.6.1 h1:vB+cNbGL/vPNGHHBoWMyeGg2jYx9J6NUOnukRAN46Tk=
-github.com/hanzozt/sdk-golang v1.6.1/go.mod h1:C5NzxvPCDItb6dH4FyHzS/opCugd5gXNftXJHodXDtI=
+github.com/hanzozt/sdk-golang v1.6.2 h1:rNzfRRAZboTGA4Eok+xMbMex8ZEw4qmNgRHR0qVs2ME=
+github.com/hanzozt/sdk-golang v1.6.2/go.mod h1:C5NzxvPCDItb6dH4FyHzS/opCugd5gXNftXJHodXDtI=
 github.com/hanzozt/secretstream v0.1.51 h1:pnBqlC7q2AEqyC313XI8aOoBpZ9lBAPvS7s0toOZ+Cc=
 github.com/hanzozt/secretstream v0.1.51/go.mod h1:Qj6YLUFvkqeXdSsbUQL2gFD1I35yolrxRGK6sSEGbp4=
 github.com/hanzozt/storage v0.4.40 h1:6OVf1Aueo5QH0uAHTW4uFZB3teuvfudgKcijs+CVfoM=

@@ -52,7 +52,7 @@ require (
 	github.com/hanzozt/jwks v1.0.8
 	github.com/hanzozt/metrics v1.4.6
 	github.com/hanzozt/runzmd v1.0.91
-	github.com/hanzozt/sdk-golang v1.6.1
+	github.com/hanzozt/sdk-golang v1.6.2
 	github.com/hanzozt/secretstream v0.1.51
 	github.com/hanzozt/storage v0.4.40
 	github.com/hanzozt/transport/v2 v2.0.216
