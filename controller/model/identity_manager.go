@@ -23,7 +23,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/foundation/v2/errorz"
 	"github.com/hanzozt/metrics"
 	"github.com/hanzozt/sdk-golang/zt"
@@ -42,6 +41,7 @@ import (
 	"github.com/hanzozt/zt/v2/controller/fields"
 	"github.com/hanzozt/zt/v2/controller/models"
 	"github.com/hanzozt/zt/v2/controller/permissions"
+	"github.com/michaelquigley/pfxlog"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"go.etcd.io/bbolt"
 	"google.golang.org/protobuf/proto"
@@ -320,7 +320,7 @@ func (self *IdentityManager) InitializeDefaultAdmin(username, password, name str
 	}
 
 	if identity != nil {
-		return errors.New("already initialized: Ziti Edge default admin already defined")
+		return errors.New("already initialized: default admin already defined")
 	}
 
 	if err = self.env.GetManagers().Dispatcher.Bootstrap(); err != nil {

@@ -136,12 +136,12 @@ func clearEnvAndInitializeTestData() *CreateConfigRouterOptions {
 
 func TestSetZitiRouterIdentityCertDefault(t *testing.T) {
 	// Ensure env variable is not set
-	_ = os.Setenv(constants.ZitiRouterIdentityCertVarName, "")
+	_ = os.Setenv(constants.RouterIdentityCertVarName, "")
 
 	routerName := "RouterTest"
 	expectedDefault := cmdhelper.GetZitiHome() + "/" + routerName + ".cert"
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityCert(rtv, routerName)
+	SetRouterIdentityCert(rtv, routerName)
 
 	// Check that the default is used
 	assert.Equal(t, expectedDefault, rtv.IdentityCert)
@@ -150,10 +150,10 @@ func TestSetZitiRouterIdentityCertDefault(t *testing.T) {
 func TestSetZitiRouterIdentityCertCustom(t *testing.T) {
 	expectedCustom := "My/Custom/Path/for/PKI/RouterTest.cert"
 	// Set the env variable which is used to populate this value
-	_ = os.Setenv(constants.ZitiRouterIdentityCertVarName, expectedCustom)
+	_ = os.Setenv(constants.RouterIdentityCertVarName, expectedCustom)
 
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityCert(rtv, "Irrelevant")
+	SetRouterIdentityCert(rtv, "Irrelevant")
 
 	// Check that the custom value is used
 	assert.Equal(t, expectedCustom, rtv.IdentityCert)
@@ -161,12 +161,12 @@ func TestSetZitiRouterIdentityCertCustom(t *testing.T) {
 
 func TestSetZitiRouterIdentityServerCertDefault(t *testing.T) {
 	// Ensure env variable is not set
-	_ = os.Setenv(constants.ZitiRouterIdentityServerCertVarName, "")
+	_ = os.Setenv(constants.RouterIdentityServerCertVarName, "")
 
 	routerName := "RouterTest"
 	expectedDefault := cmdhelper.GetZitiHome() + "/" + routerName + ".server.chain.cert"
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityServerCert(rtv, routerName)
+	SetRouterIdentityServerCert(rtv, routerName)
 
 	// Check that the default is used
 	assert.Equal(t, expectedDefault, rtv.IdentityServerCert)
@@ -175,10 +175,10 @@ func TestSetZitiRouterIdentityServerCertDefault(t *testing.T) {
 func TestSetZitiRouterIdentityServerCertCustom(t *testing.T) {
 	expectedCustom := "My/Custom/Path/for/PKI/RouterTest.server.chain.cert"
 	// Set the env variable which is used to populate this value
-	_ = os.Setenv(constants.ZitiRouterIdentityServerCertVarName, expectedCustom)
+	_ = os.Setenv(constants.RouterIdentityServerCertVarName, expectedCustom)
 
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityServerCert(rtv, "Irrelevant")
+	SetRouterIdentityServerCert(rtv, "Irrelevant")
 
 	// Check that the custom value is used
 	assert.Equal(t, expectedCustom, rtv.IdentityServerCert)
@@ -186,12 +186,12 @@ func TestSetZitiRouterIdentityServerCertCustom(t *testing.T) {
 
 func TestSetZitiRouterIdentityKeyCertDefault(t *testing.T) {
 	// Ensure env variable is not set
-	_ = os.Setenv(constants.ZitiRouterIdentityKeyVarDescription, "")
+	_ = os.Setenv(constants.RouterIdentityKeyVarDescription, "")
 
 	routerName := "RouterTest"
 	expectedDefault := cmdhelper.GetZitiHome() + "/" + routerName + ".key"
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityKey(rtv, routerName)
+	SetRouterIdentityKey(rtv, routerName)
 
 	// Check that the default is used
 	assert.Equal(t, expectedDefault, rtv.IdentityKey)
@@ -200,10 +200,10 @@ func TestSetZitiRouterIdentityKeyCertDefault(t *testing.T) {
 func TestSetZitiRouterIdentityKeyCustom(t *testing.T) {
 	expectedCustom := "My/Custom/Path/for/PKI/RouterTest.key"
 	// Set the env variable which is used to populate this value
-	_ = os.Setenv(constants.ZitiRouterIdentityKeyVarName, expectedCustom)
+	_ = os.Setenv(constants.RouterIdentityKeyVarName, expectedCustom)
 
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityKey(rtv, "Irrelevant")
+	SetRouterIdentityKey(rtv, "Irrelevant")
 
 	// Check that the custom value is used
 	assert.Equal(t, expectedCustom, rtv.IdentityKey)
@@ -211,12 +211,12 @@ func TestSetZitiRouterIdentityKeyCustom(t *testing.T) {
 
 func TestSetZitiRouterIdentityKeyCADefault(t *testing.T) {
 	// Ensure env variable is not set
-	_ = os.Setenv(constants.ZitiRouterIdentityCAVarName, "")
+	_ = os.Setenv(constants.RouterIdentityCAVarName, "")
 
 	routerName := "RouterTest"
 	expectedDefault := cmdhelper.GetZitiHome() + "/" + routerName + ".cas"
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityCA(rtv, routerName)
+	SetRouterIdentityCA(rtv, routerName)
 
 	// Check that the default is used
 	assert.Equal(t, expectedDefault, rtv.IdentityCA)
@@ -225,10 +225,10 @@ func TestSetZitiRouterIdentityKeyCADefault(t *testing.T) {
 func TestSetZitiRouterIdentityCACustom(t *testing.T) {
 	expectedCustom := "My/Custom/Path/for/PKI/RouterTest.cas"
 	// Set the env variable which is used to populate this value
-	_ = os.Setenv(constants.ZitiRouterIdentityCAVarName, expectedCustom)
+	_ = os.Setenv(constants.RouterIdentityCAVarName, expectedCustom)
 
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentityCA(rtv, "Irrelevant")
+	SetRouterIdentityCA(rtv, "Irrelevant")
 
 	// Check that the custom value is used
 	assert.Equal(t, expectedCustom, rtv.IdentityCA)
@@ -249,9 +249,9 @@ func TestSetZitiRouterIdentitySetsAllIdentitiesAndRouterName(t *testing.T) {
 	assert.Equal(t, blank, rtv.IdentityCA)
 
 	// Set the env variable
-	_ = os.Setenv(constants.ZitiEdgeRouterNameVarName, expectedName)
+	_ = os.Setenv(constants.RouterNameVarName, expectedName)
 
-	SetZitiRouterIdentity(rtv, expectedName)
+	SetRouterIdentity(rtv, expectedName)
 
 	// Check that the value matches
 	assert.Equal(t, expectedName, rtv.Name)
@@ -276,9 +276,9 @@ func TestSetZitiRouterIdentitySetsAllIdentitiesAndRouterNameToHostWhenBlank(t *t
 	assert.Equal(t, blank, rtv.IdentityCA)
 
 	// Set the env variable to an empty value
-	_ = os.Setenv(constants.ZitiEdgeRouterNameVarName, "")
+	_ = os.Setenv(constants.RouterNameVarName, "")
 
-	SetZitiRouterIdentity(rtv, expectedName)
+	SetRouterIdentity(rtv, expectedName)
 
 	// Check that the value matches
 	assert.Equal(t, expectedName, rtv.Name)
@@ -292,19 +292,19 @@ func TestAltServerCerts(t *testing.T) {
 	clearEnvAndInitializeTestData()
 	certPath := "/path/to/cert"
 	keyPath := "/path/to/key"
-	_ = os.Setenv("ZITI_PKI_ALT_SERVER_CERT", certPath)
+	_ = os.Setenv("ZT_PKI_ALT_SERVER_CERT", certPath)
 
 	rtv := &RouterTemplateValues{}
-	SetZitiRouterIdentity(rtv, "routerTest")
+	SetRouterIdentity(rtv, "routerTest")
 
-	//with only ZITI_ALT_SERVER_CERT set, should be false/blank
+	//with only ZT_ALT_SERVER_CERT set, should be false/blank
 	assert.False(t, rtv.AltCertsEnabled)
 	assert.Equal(t, "", rtv.AltServerCert)
 	assert.Equal(t, "", rtv.AltServerKey)
 
-	_ = os.Setenv("ZITI_PKI_ALT_SERVER_KEY", keyPath)
+	_ = os.Setenv("ZT_PKI_ALT_SERVER_KEY", keyPath)
 	rtv = &RouterTemplateValues{}
-	SetZitiRouterIdentity(rtv, "routerTest")
+	SetRouterIdentity(rtv, "routerTest")
 
 	assert.True(t, rtv.AltCertsEnabled)
 	assert.Equal(t, certPath, rtv.AltServerCert)

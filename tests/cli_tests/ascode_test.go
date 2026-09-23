@@ -28,19 +28,19 @@ import (
 	"time"
 
 	"github.com/antchfx/jsonquery"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/zt/v2/tests/testutil"
 	"github.com/hanzozt/zt/v2/zt/cmd/ascode/exporter"
 	"github.com/hanzozt/zt/v2/zt/cmd/ascode/importer"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/stretchr/testify/assert"
 )
 
 var log = pfxlog.Logger()
 
 func TestYamlUploadAndDownload(t *testing.T) {
-	ztPath := os.Getenv("ZITI_CLI_TEST_ZITI_BIN")
+	ztPath := os.Getenv("ZT_CLI_TEST_ZT_BIN")
 	if ztPath == "" {
-		t.Fatalf("ZITI_CLI_TEST_ZITI_BIN not set")
+		t.Fatalf("ZT_CLI_TEST_ZT_BIN not set")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 
@@ -53,8 +53,8 @@ func TestYamlUploadAndDownload(t *testing.T) {
 		t.Fatalf("failed creating temp dir: %v", err)
 	}
 
-	// set ZITI_CONFIG_DIR so that anything here forth is not corrupting local stuff
-	_ = os.Setenv("ZITI_CONFIG_DIR", filepath.Join(testRunHome, ".config/zt"))
+	// set ZT_CONFIG_DIR so that anything here forth is not corrupting local stuff
+	_ = os.Setenv("ZT_CONFIG_DIR", filepath.Join(testRunHome, ".config/zt"))
 	overlay := testutil.CreateOverlay(t, ctx, 60*time.Second, testRunHome, "import", false)
 	targetDone := make(chan error)
 	go overlay.StartExternal(ztPath, targetDone)

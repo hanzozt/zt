@@ -24,10 +24,10 @@ import (
 	"slices"
 	"time"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/edge-api/rest_model"
 	"github.com/hanzozt/sdk-golang/zt"
 	"github.com/hanzozt/zt/v2/common/eid"
+	"github.com/michaelquigley/pfxlog"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -57,7 +57,7 @@ func newSimpleSimCmd() *cobra.Command {
 	cmd.Flags().SetInterspersed(true)
 	cmd.Flags().BoolVarP(&action.verbose, "verbose", "v", false, "Enable verbose logging")
 	cmd.Flags().StringVar(&action.logFormatter, "log-formatter", "", "Specify log formatter [json|pfxlog|text]")
-	cmd.Flags().StringVarP(&action.configFile, "identity", "i", "", "Specify the Ziti identity to use. If not specified the Ziti listener won't be started")
+	cmd.Flags().StringVarP(&action.configFile, "identity", "i", "", "Specify the ZT identity to use. If not specified the ZT listener won't be started")
 	cmd.Flags().SetInterspersed(true)
 
 	return cmd

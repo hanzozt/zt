@@ -25,8 +25,6 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/judedaryl/go-arrayutils"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/edge-api/rest_management_api_client"
 	"github.com/hanzozt/zt/v2/internal"
 	ztcobra "github.com/hanzozt/zt/v2/internal/cobra"
@@ -34,6 +32,8 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/common"
 	"github.com/hanzozt/zt/v2/zt/cmd/edge"
 	"github.com/hanzozt/zt/v2/zt/constants"
+	"github.com/judedaryl/go-arrayutils"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -171,7 +171,7 @@ func NewExportCmd(out io.Writer, errOut io.Writer) *cobra.Command {
 	// environment variables are prefixed, d.g. a flag like --number
 	// binds to an environment variable STING_NUMBER. This helps
 	// avoid conflicts.
-	viper.SetEnvPrefix(constants.ZITI) // All env vars we seek will be prefixed with "ZITI_"
+	viper.SetEnvPrefix(constants.ZT) // All env vars we seek will be prefixed with "ZT_"
 
 	// Environment variables can't have dashes in them, so bind them to their equivalent
 	// keys with underscores, d.g. --favorite-color to STING_FAVORITE_COLOR

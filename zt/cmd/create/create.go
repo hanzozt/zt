@@ -26,7 +26,7 @@ import (
 
 var (
 	createLong = templates.LongDesc(`
-		Creates a new Ziti resource.
+		Creates a new ZT resource.
 
 	`)
 )

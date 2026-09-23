@@ -35,11 +35,11 @@ jobs:
         run: |
           $(go env GOPATH)/bin/zt-ci configure-git
 
-      - name: Pull ZITI_VERSION and set as $GITHUB_ENV for use with fablab
+      - name: Pull ZT_VERSION and set as $GITHUB_ENV for use with fablab
         run: |
           version="$($(go env GOPATH)/bin/zt-ci -q get-current-version)"
-          echo "Ziti Version: $version"
-          echo "ZITI_VERSION=$version" >> $GITHUB_ENV
+          echo "ZT version: $version"
+          echo "ZT_VERSION=$version" >> $GITHUB_ENV
 
       - name: Build and Run
         run: |

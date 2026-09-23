@@ -13,9 +13,9 @@ import (
 
 	"github.com/blang/semver"
 	"github.com/go-resty/resty/v2"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/foundation/v2/versions"
 	c "github.com/hanzozt/zt/v2/zt/constants"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/pkg/errors"
 )
 
@@ -236,7 +236,7 @@ func InstallGitHubRelease(ztApp string, release *GitHubReleasesData, binDir stri
 	}()
 
 	if strings.HasSuffix(fileName, ".zip") {
-		if ztApp == c.ZITI_EDGE_TUNNEL {
+		if ztApp == c.ZT_EDGE_TUNNEL {
 			count := 0
 			ztFileName := "zt-edge-tunnel-" + version
 			err = Unzip(fullPath, binDir, func(path string) (string, bool) {
@@ -261,7 +261,7 @@ func InstallGitHubRelease(ztApp string, release *GitHubReleasesData, binDir stri
 			return errors.Errorf("unsupported application '%s'", ztApp)
 		}
 	} else if strings.HasSuffix(fileName, ".tar.gz") {
-		if ztApp == c.ZITI {
+		if ztApp == c.ZT {
 			count := 0
 			ztFileName := "zt-" + version
 			expectedPath := "zt"

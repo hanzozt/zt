@@ -10,12 +10,12 @@ v: 3
 
 {{ if .Controller.Ctrl.Clustered }}
 cluster:
-  dataDir:         "{{ .ZitiHome }}/raft"
+  dataDir:         "{{ .Home }}/raft"
 {{ else }}
 db:                     "{{ .Controller.Database.DatabaseFile }}"
 # uncomment and configure to enable HA
 # cluster:
-#   dataDir:         "{{ .ZitiHome }}/raft"
+#   dataDir:         "{{ .Home }}/raft"
 {{ end }}
 
 identity:

@@ -1,6 +1,6 @@
 v: 3
 
-db: testdata/${ZITI_TEST_DB}.db
+db: testdata/${ZT_TEST_DB}.db
 
 identity:
   cert: testdata/ca/intermediate/certs/ctrl-client.cert.pem

@@ -21,12 +21,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/foundation/v2/term"
 	"github.com/hanzozt/foundation/v2/versions"
 	"github.com/hanzozt/zt/v2/controller"
 	"github.com/hanzozt/zt/v2/controller/config"
 	"github.com/hanzozt/zt/v2/controller/server"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/spf13/cobra"
 )
 
@@ -105,7 +105,7 @@ func NewEdgeInitializeCmd(versionProvider versions.VersionProvider) *cobra.Comma
 			}
 			ctrl.Shutdown()
 
-			pfxlog.Logger().Info("Ziti Edge initialization complete")
+			pfxlog.Logger().Info("edge initialization complete")
 		},
 	}
 

@@ -22,7 +22,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/channel/v4"
 	"github.com/hanzozt/storage/boltz"
 	"github.com/hanzozt/zt/v2/common/ctrlchan"
@@ -35,6 +34,7 @@ import (
 	_ "github.com/hanzozt/zt/v2/controller/internal/routes"
 	"github.com/hanzozt/zt/v2/controller/model"
 	sync2 "github.com/hanzozt/zt/v2/controller/sync_strats"
+	"github.com/michaelquigley/pfxlog"
 )
 
 type Controller struct {
@@ -251,7 +251,7 @@ func (c *Controller) checkEdgeInitialized() {
 
 	if admin == nil {
 		if !c.AppEnv.GetHostController().IsRaftEnabled() {
-			log.Fatal("the Ziti Edge has not been initialized via 'zt controller edge init', no default admin exists")
+			log.Fatal("the edge has not been initialized via 'zt controller edge init', no default admin exists")
 		}
 
 		log.Warnf("the controller has not yet been initialized, no default admin exists. Add this node to a cluster using "+

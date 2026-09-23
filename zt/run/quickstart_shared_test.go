@@ -376,30 +376,30 @@ func deleteServicePolicyByID(t *testing.T, client *rest_management_api_client.Zi
 func performQuickstartTest(t *testing.T) {
 	// Wait for the controller to become available
 	logrus.StandardLogger().Level = logrus.TraceLevel
-	ztAdminUsername := os.Getenv("ZITI_USER")
+	ztAdminUsername := os.Getenv("ZT_USER")
 	if ztAdminUsername == "" {
 		ztAdminUsername = "admin"
 	}
-	ztAdminPassword := os.Getenv("ZITI_PWD")
+	ztAdminPassword := os.Getenv("ZT_PWD")
 	if ztAdminPassword == "" {
 		ztAdminPassword = "admin"
 	}
 	testerUsername := "gotester"
-	advAddy := os.Getenv("ZITI_CTRL_EDGE_ADVERTISED_ADDRESS")
-	advPort := os.Getenv("ZITI_CTRL_EDGE_ADVERTISED_PORT")
+	advAddy := os.Getenv("ZT_CTRL_EDGE_ADVERTISED_ADDRESS")
+	advPort := os.Getenv("ZT_CTRL_EDGE_ADVERTISED_PORT")
 	if advAddy == "" {
 		advAddy = "zt-edge-controller"
 	}
 	if advPort == "" {
 		advPort = "1280"
 	}
-	erName := os.Getenv("ZITI_ROUTER_NAME")
+	erName := os.Getenv("ZT_ROUTER_NAME")
 	if erName == "" {
 		erName = "zt-edge-router"
 	}
 
 	ctrlAddress := "https://" + advAddy + ":" + advPort
-	bindHostAddress := os.Getenv("ZITI_TEST_BIND_ADDRESS")
+	bindHostAddress := os.Getenv("ZT_TEST_BIND_ADDRESS")
 	// if bindHostAddress is not set, use the advertised address of the client API; this is useful if the client API is
 	// behind a load balancer that routes by SNI because the request's server name indication in the TLS ClientHello
 	// usually reflects the service's intercept address, not the address the load balancer is expecting

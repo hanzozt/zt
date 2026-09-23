@@ -51,7 +51,7 @@ type CreateConfigOptions struct {
 }
 
 type ConfigTemplateValues struct {
-	ZitiHome              string
+	Home                  string
 	HostnameOrNetworkName string
 
 	Controller ControllerTemplateValues
@@ -241,7 +241,7 @@ func (data *ConfigTemplateValues) PopulateConfigValues() {
 	// Get and add zt home to the params
 	ztHome := cmdHelper.GetZitiHome()
 
-	data.ZitiHome = ztHome
+	data.Home = ztHome
 	// ************* Controller Values ************
 	// Identities are handled in create_config_controller
 	// ctrl:

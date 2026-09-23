@@ -7,9 +7,9 @@ import (
 )
 
 func InstallZiti(targetVersion, targetOS, targetArch, binDir string, verbose bool) error {
-	fmt.Println("Attempting to install '" + c.ZITI + "' version: " + targetVersion)
+	fmt.Println("Attempting to install '" + c.ZT + "' version: " + targetVersion)
 	return FindVersionAndInstallGitHubRelease(
-		c.HanzoZTOrg, c.ZITI, c.ZITI, targetOS, targetArch, binDir, targetVersion, verbose)
+		c.HanzoZTOrg, c.ZT, c.ZT, targetOS, targetArch, binDir, targetVersion, verbose)
 }
 
 func InstallZrok(targetVersion, targetOS, targetArch, binDir string, verbose bool) error {

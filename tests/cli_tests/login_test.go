@@ -372,7 +372,7 @@ func (s *cliTestState) cliTestsOverZiti(t *testing.T, ztPath string) {
 	t.Run("cli tests over zt", func(t *testing.T) {
 		util.ReloadConfig() //every iteration needs to call reload to flush/overwrite the cached client in global state
 		cfgDir := filepath.Join(s.homeDir, ".config/overlay")
-		_ = os.Setenv("ZITI_CONFIG_DIR", cfgDir)
+		_ = os.Setenv("ZT_CONFIG_DIR", cfgDir)
 		_ = os.RemoveAll(cfgDir)
 		s.controllerUnderTest.ControllerAddress = "mgmt.zt"
 		s.controllerUnderTest.ControllerPort = 443
@@ -386,7 +386,7 @@ func (s *cliTestState) cliTestsOverAddressableTerminators(t *testing.T, ztPath s
 	t.Run("cli tests over zt with addressable terminator", func(t *testing.T) {
 		util.ReloadConfig() //every iteration needs to call reload to flush/overwrite the cached client in global state
 		cfgDir := filepath.Join(s.homeDir, ".config/overlay-addressable-terminator")
-		_ = os.Setenv("ZITI_CONFIG_DIR", cfgDir)
+		_ = os.Setenv("ZT_CONFIG_DIR", cfgDir)
 		_ = os.RemoveAll(cfgDir)
 		s.controllerUnderTest.ControllerAddress = "mgmt-addressable-terminators"
 		s.controllerUnderTest.ControllerPort = 443

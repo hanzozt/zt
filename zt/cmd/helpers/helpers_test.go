@@ -29,7 +29,7 @@ func TestWorkingDirHasNoWindowsSlashes(t *testing.T) {
 
 func TestGetZitiHomeWhenUnset(t *testing.T) {
 	// Setup
-	varName := "ZITI_HOME"
+	varName := "ZT_HOME"
 
 	// Ensure the variable is unset
 	_ = os.Unsetenv(varName)
@@ -43,7 +43,7 @@ func TestGetZitiHomeWhenUnset(t *testing.T) {
 
 func TestGetZitiHomeWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_HOME"
+	varName := "ZT_HOME"
 	expectedValue := "/path/to/zt/home"
 
 	// Set the env variable
@@ -56,7 +56,7 @@ func TestGetZitiHomeWhenSet(t *testing.T) {
 
 func TestGetHomeWhenSetWithWindowsSlashes(t *testing.T) {
 	// Setup
-	varName := "ZITI_HOME"
+	varName := "ZT_HOME"
 	expectedValue := "/path/to/zt/home"
 
 	// Set the env variable using windows backslash
@@ -69,7 +69,7 @@ func TestGetHomeWhenSetWithWindowsSlashes(t *testing.T) {
 
 func TestGetCtrlEdgeAdvertisedAddressWhenUnset(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_EDGE_ADVERTISED_ADDRESS"
+	varName := "ZT_CTRL_EDGE_ADVERTISED_ADDRESS"
 
 	// Ensure the variable is unset
 	_ = os.Unsetenv(varName)
@@ -82,7 +82,7 @@ func TestGetCtrlEdgeAdvertisedAddressWhenUnset(t *testing.T) {
 
 func TestGetCtrlEdgeAdvertisedAddressWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_EDGE_ADVERTISED_ADDRESS"
+	varName := "ZT_CTRL_EDGE_ADVERTISED_ADDRESS"
 	expectedValue := "localhost"
 
 	// Set the env variable
@@ -95,7 +95,7 @@ func TestGetCtrlEdgeAdvertisedAddressWhenSet(t *testing.T) {
 
 func TestGetCtrlAdvertisedPortWhenUnset(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_ADVERTISED_PORT"
+	varName := "ZT_CTRL_ADVERTISED_PORT"
 
 	// Ensure the variable is unset
 	_ = os.Unsetenv(varName)
@@ -108,7 +108,7 @@ func TestGetCtrlAdvertisedPortWhenUnset(t *testing.T) {
 
 func TestGetCtrlAdvertisedPortWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_ADVERTISED_PORT"
+	varName := "ZT_CTRL_ADVERTISED_PORT"
 	expectedValue := "1234"
 
 	// Set the env variable
@@ -121,7 +121,7 @@ func TestGetCtrlAdvertisedPortWhenSet(t *testing.T) {
 
 func TestGetCtrlAdvertisedAddressWhenUnset(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_ADVERTISED_ADDRESS"
+	varName := "ZT_CTRL_ADVERTISED_ADDRESS"
 
 	// Ensure the variable is unset
 	_ = os.Unsetenv(varName)
@@ -134,7 +134,7 @@ func TestGetCtrlAdvertisedAddressWhenUnset(t *testing.T) {
 
 func TestGetCtrlAdvertisedAddressWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_ADVERTISED_ADDRESS"
+	varName := "ZT_CTRL_ADVERTISED_ADDRESS"
 	expectedValue := "localhost"
 
 	// Set the env variable
@@ -147,7 +147,7 @@ func TestGetCtrlAdvertisedAddressWhenSet(t *testing.T) {
 
 func TestGetEdgeRouterPortWhenUnset(t *testing.T) {
 	// Setup
-	varName := "ZITI_ROUTER_PORT"
+	varName := "ZT_ROUTER_PORT"
 
 	// Ensure the variable is unset
 	_ = os.Unsetenv(varName)
@@ -160,7 +160,7 @@ func TestGetEdgeRouterPortWhenUnset(t *testing.T) {
 
 func TestGetEdgeRouterPortWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_ROUTER_PORT"
+	varName := "ZT_ROUTER_PORT"
 	expectedValue := "4321"
 
 	// Set the env variable
@@ -173,7 +173,7 @@ func TestGetEdgeRouterPortWhenSet(t *testing.T) {
 
 func TestGetCtrlEdgeAdvertisedPortWhenNotSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_EDGE_ADVERTISED_PORT"
+	varName := "ZT_CTRL_EDGE_ADVERTISED_PORT"
 	expectedValue := "1280"
 
 	// Be sure the var is unset
@@ -186,7 +186,7 @@ func TestGetCtrlEdgeAdvertisedPortWhenNotSet(t *testing.T) {
 
 func TestGetCtrlEdgeAdvertisedPortWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_CTRL_EDGE_ADVERTISED_PORT"
+	varName := "ZT_CTRL_EDGE_ADVERTISED_PORT"
 	expectedValue := "1234"
 
 	// Set the env variable
@@ -199,7 +199,7 @@ func TestGetCtrlEdgeAdvertisedPortWhenSet(t *testing.T) {
 
 func TestGetEdgeIdentityEnrollmentDurationWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION"
+	varName := "ZT_EDGE_IDENTITY_ENROLLMENT_DURATION"
 	expectedValue := 5 * time.Minute
 
 	// Set the env variable
@@ -213,7 +213,7 @@ func TestGetEdgeIdentityEnrollmentDurationWhenSet(t *testing.T) {
 /*  Ensure that the default value is returned even if the environment variable is set but is blank. */
 func TestGetEdgeIdentityEnrollmentDurationWhenSetToBlank(t *testing.T) {
 	// Setup
-	varName := "ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION"
+	varName := "ZT_EDGE_IDENTITY_ENROLLMENT_DURATION"
 	// Expect the default, hard coding the value to act as an alert if default is changed in edge project
 	expectedValue := 180 * time.Minute
 
@@ -227,7 +227,7 @@ func TestGetEdgeIdentityEnrollmentDurationWhenSetToBlank(t *testing.T) {
 
 func TestGetEdgeIdentityEnrollmentDurationWhenNotSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION"
+	varName := "ZT_EDGE_IDENTITY_ENROLLMENT_DURATION"
 	// Expect the default, hard coding the value to act as an alert if default is changed in edge project
 	expectedValue := 180 * time.Minute
 
@@ -241,7 +241,7 @@ func TestGetEdgeIdentityEnrollmentDurationWhenNotSet(t *testing.T) {
 
 func TestGetEdgeRouterEnrollmentDurationWhenSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_ROUTER_ENROLLMENT_DURATION"
+	varName := "ZT_ROUTER_ENROLLMENT_DURATION"
 	expectedValue := 5 * time.Minute
 
 	// Set the env variable
@@ -255,7 +255,7 @@ func TestGetEdgeRouterEnrollmentDurationWhenSet(t *testing.T) {
 /*  Ensure that the default value is returned even if the environment variable is set but is blank. */
 func TestGetEdgeRouterEnrollmentDurationWhenSetToBlank(t *testing.T) {
 	// Setup
-	varName := "ZITI_ROUTER_ENROLLMENT_DURATION"
+	varName := "ZT_ROUTER_ENROLLMENT_DURATION"
 	// Expect the default, hard coding the value to act as an alert if default is changed in edge project
 	expectedValue := 180 * time.Minute
 
@@ -269,7 +269,7 @@ func TestGetEdgeRouterEnrollmentDurationWhenSetToBlank(t *testing.T) {
 
 func TestGetEdgeRouterEnrollmentDurationWhenNotSet(t *testing.T) {
 	// Setup
-	varName := "ZITI_ROUTER_ENROLLMENT_DURATION"
+	varName := "ZT_ROUTER_ENROLLMENT_DURATION"
 	// Expect the default, hard coding the value to act as an alert if default is changed in edge project
 	expectedValue := 180 * time.Minute
 

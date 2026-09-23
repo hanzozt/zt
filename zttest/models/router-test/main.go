@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/fablab"
 	"github.com/hanzozt/fablab/kernel/lib/actions"
 	"github.com/hanzozt/fablab/kernel/lib/actions/component"
@@ -28,13 +27,14 @@ import (
 	"github.com/hanzozt/zt/zttest/models/test_resources"
 	"github.com/hanzozt/zt/zttest/ztlab"
 	"github.com/hanzozt/zt/zttest/ztlab/actions/edge"
+	"github.com/michaelquigley/pfxlog"
 	"go.etcd.io/bbolt"
 )
 
 func getDbFile() string {
-	dbFile := os.Getenv("ZITI_DB")
+	dbFile := os.Getenv("ZT_DB")
 	if dbFile == "" {
-		pfxlog.Logger().Fatal("required env var ZITI_DB not set")
+		pfxlog.Logger().Fatal("required env var ZT_DB not set")
 	}
 	return dbFile
 }

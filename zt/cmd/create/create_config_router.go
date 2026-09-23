@@ -79,7 +79,7 @@ func NewCmdCreateConfigRouter(routerOptions *CreateConfigRouterOptions) *NewCrea
 
 				// Update router data with options passed in
 				data.Router.Name = validateRouterName(routerOptions.RouterName)
-				SetZitiRouterIdentity(&data.Router, data.Router.Name)
+				SetRouterIdentity(&data.Router, data.Router.Name)
 			},
 		},
 		RenderedValues: data,

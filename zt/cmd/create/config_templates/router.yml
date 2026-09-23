@@ -20,7 +20,7 @@ ctrl:
   {{- if .Controller.Ctrl.AdvertisedAddress }}
   endpoint:             tls:{{ .Controller.Ctrl.AdvertisedAddress }}:{{ .Controller.Ctrl.AdvertisedPort }}
   {{- end }}
-  endpointsFile:        {{ .ZitiHome }}/endpoints.yml
+  endpointsFile:        {{ .Home }}/endpoints.yml
 
 link:
   dialers:
@@ -57,7 +57,7 @@ csr:
   province: NC
   locality: Charlotte
   organization: NetFoundry
-  organizationalUnit: Ziti
+  organizationalUnit: ZT
   sans:
     dns:
       - localhost

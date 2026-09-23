@@ -124,24 +124,24 @@ func (self *RestClientEdgeIdentity) NewClient(timeout time.Duration, verbose boo
 }
 
 func (self *RestClientEdgeIdentity) getHttpTransport(log *log.Logger, verbose bool, terminator string) (*http.Transport, error) {
-	if ztFromEnv, ztFromEnvErr := ZitifiedTransportFromEnv(""); ztFromEnvErr != nil {
+	if ztFromEnv, ztFromEnvErr := TransportFromEnv(""); ztFromEnvErr != nil {
 		return &http.Transport{}, ztFromEnvErr
 	} else {
 		if ztFromEnv != nil {
 			if verbose {
-				log.Printf("Using Ziti Transport from environment var: %s", constants.ZitiCliNetworkIdVarName)
+				log.Printf("Using ZT transport from environment var: %s", constants.CliNetworkIdVarName)
 			}
 			return ztFromEnv, nil
 		} else {
 			if self.NetworkIdFile != "" {
-				if ztFromFile, ztFromFileErr := NewZitifiedTransportFromFile(self.NetworkIdFile, terminator); ztFromFileErr != nil {
+				if ztFromFile, ztFromFileErr := NewTransportFromFile(self.NetworkIdFile, terminator); ztFromFileErr != nil {
 					// ignore any error around the networkId file
 					if verbose {
-						log.Printf("Ziti transport from cached file failed: %v", ztFromFileErr)
+						log.Printf("ZT transport from cached file failed: %v", ztFromFileErr)
 					}
 				} else {
 					if verbose {
-						log.Printf("Using Ziti transport from cached file: %s", self.NetworkIdFile)
+						log.Printf("Using ZT transport from cached file: %s", self.NetworkIdFile)
 					}
 					return ztFromFile, nil
 				}
@@ -265,13 +265,13 @@ func (self *RestClientEdgeIdentity) NewZitiContext() (zt.Context, error) {
 		if err != nil {
 			return nil, fmt.Errorf("failed to read zt identity file %s: %v", self.NetworkIdFile, err)
 		}
-		return NewZitifiedContextFromSlice(data)
+		return NewContextFromSlice(data)
 	} else {
-		data, err := ZitiConfigFromEnv()
+		data, err := ConfigFromEnv()
 		if err != nil {
 			return nil, err
 		}
-		return NewZitifiedContextFromSlice(data)
+		return NewContextFromSlice(data)
 	}
 }
 

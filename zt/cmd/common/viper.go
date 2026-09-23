@@ -25,7 +25,7 @@ import (
 
 func NewViper() *viper.Viper {
 	result := viper.New()
-	result.SetEnvPrefix(c.ZITI) // All env vars we seek will be prefixed with "ZITI_"
+	result.SetEnvPrefix(c.ZT) // All env vars we seek will be prefixed with "ZT_"
 	result.AutomaticEnv()
 	replacer := strings.NewReplacer("-", "_") // We use underscores in env var names, but use dashes in flag names
 	result.SetEnvKeyReplacer(replacer)

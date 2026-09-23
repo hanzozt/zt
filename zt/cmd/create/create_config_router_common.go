@@ -24,24 +24,24 @@ import (
 	"github.com/hanzozt/zt/v2/zt/constants"
 )
 
-func SetZitiRouterIdentity(r *RouterTemplateValues, routerName string) {
-	SetZitiRouterIdentityCert(r, routerName)
-	SetZitiRouterIdentityServerCert(r, routerName)
-	SetZitiRouterIdentityKey(r, routerName)
-	SetZitiRouterIdentityCA(r, routerName)
+func SetRouterIdentity(r *RouterTemplateValues, routerName string) {
+	SetRouterIdentityCert(r, routerName)
+	SetRouterIdentityServerCert(r, routerName)
+	SetRouterIdentityKey(r, routerName)
+	SetRouterIdentityCA(r, routerName)
 	SetRouterAltServerCerts(r)
 
 	// Set the router name
 	r.Name = routerName
 
 	// Edge router IP override
-	edgeRouterIPOverride := os.Getenv(constants.ZitiEdgeRouterIPOverrideVarName)
+	edgeRouterIPOverride := os.Getenv(constants.RouterIPOverrideVarName)
 	if edgeRouterIPOverride != "" {
 		r.Edge.IPOverride = edgeRouterIPOverride
 	}
 
 	// Set advertised host
-	advertisedAddress := os.Getenv(constants.ZitiEdgeRouterAdvertisedAddressVarName)
+	advertisedAddress := os.Getenv(constants.RouterAdvertisedAddressVarName)
 	resolvedHostname, _ := os.Hostname()
 	if advertisedAddress != "" {
 		r.Edge.AdvertisedHost = advertisedAddress
@@ -54,29 +54,29 @@ func SetZitiRouterIdentity(r *RouterTemplateValues, routerName string) {
 		}
 	}
 }
-func SetZitiRouterIdentityCert(r *RouterTemplateValues, routerName string) {
-	val := os.Getenv(constants.ZitiRouterIdentityCertVarName)
+func SetRouterIdentityCert(r *RouterTemplateValues, routerName string) {
+	val := os.Getenv(constants.RouterIdentityCertVarName)
 	if val == "" {
 		val = cmdhelper.GetZitiHome() + "/" + routerName + ".cert" // default
 	}
 	r.IdentityCert = cmdhelper.NormalizePath(val)
 }
-func SetZitiRouterIdentityServerCert(r *RouterTemplateValues, routerName string) {
-	val := os.Getenv(constants.ZitiRouterIdentityServerCertVarName)
+func SetRouterIdentityServerCert(r *RouterTemplateValues, routerName string) {
+	val := os.Getenv(constants.RouterIdentityServerCertVarName)
 	if val == "" {
 		val = cmdhelper.GetZitiHome() + "/" + routerName + ".server.chain.cert" // default
 	}
 	r.IdentityServerCert = cmdhelper.NormalizePath(val)
 }
-func SetZitiRouterIdentityKey(r *RouterTemplateValues, routerName string) {
-	val := os.Getenv(constants.ZitiRouterIdentityKeyVarName)
+func SetRouterIdentityKey(r *RouterTemplateValues, routerName string) {
+	val := os.Getenv(constants.RouterIdentityKeyVarName)
 	if val == "" {
 		val = cmdhelper.GetZitiHome() + "/" + routerName + ".key" // default
 	}
 	r.IdentityKey = cmdhelper.NormalizePath(val)
 }
-func SetZitiRouterIdentityCA(r *RouterTemplateValues, routerName string) {
-	val := os.Getenv(constants.ZitiRouterIdentityCAVarName)
+func SetRouterIdentityCA(r *RouterTemplateValues, routerName string) {
+	val := os.Getenv(constants.RouterIdentityCAVarName)
 	if val == "" {
 		val = cmdhelper.GetZitiHome() + "/" + routerName + ".cas" // default
 	}

@@ -25,8 +25,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/judedaryl/go-arrayutils"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/edge-api/rest_management_api_client"
 	"github.com/hanzozt/zt/v2/internal"
 	ztcobra "github.com/hanzozt/zt/v2/internal/cobra"
@@ -34,6 +32,8 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/common"
 	"github.com/hanzozt/zt/v2/zt/cmd/edge"
 	"github.com/hanzozt/zt/v2/zt/constants"
+	"github.com/judedaryl/go-arrayutils"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -137,7 +137,7 @@ func NewImportCmd(out io.Writer, errOut io.Writer) *cobra.Command {
 
 	v := viper.New()
 
-	viper.SetEnvPrefix(constants.ZITI) // All env vars we seek will be prefixed with "ZITI_"
+	viper.SetEnvPrefix(constants.ZT) // All env vars we seek will be prefixed with "ZT_"
 	v.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 	v.AutomaticEnv()
 

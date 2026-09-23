@@ -25,9 +25,9 @@ import (
 	"strings"
 
 	"github.com/Jeffail/gabs"
-	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/hanzozt/foundation/v2/errorz"
 	"github.com/hanzozt/zt/v2/zt/util"
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/pkg/errors"
 )
 
@@ -144,7 +144,7 @@ func MapNamesToIDs(api util.API, entityType string, o *Options, list ...string) 
 			for _, entity := range list {
 				entityId, _ := entity.Path("id").Data().(string)
 				result = append(result, entityId)
-				if val, found := os.LookupEnv("ZITI_CLI_DEBUG"); found && strings.EqualFold("true", val) {
+				if val, found := os.LookupEnv("ZT_CLI_DEBUG"); found && strings.EqualFold("true", val) {
 					fmt.Printf("Found %v with id %v for name %v\n", entityType, entityId, val)
 				}
 			}

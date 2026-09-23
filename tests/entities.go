@@ -761,7 +761,7 @@ func newTestCaCert() (*x509.Certificate, *ecdsa.PrivateKey, *bytes.Buffer) {
 	caCert := &x509.Certificate{
 		SerialNumber: big.NewInt(2019),
 		Subject: pkix.Name{
-			Organization: []string{"Ziti Dev"},
+			Organization: []string{"ZT Dev"},
 			Country:      []string{"US"},
 			Province:     []string{"Anywhere"},
 			Locality:     []string{"Anytime"},
@@ -877,7 +877,7 @@ func (entity *ca) CreateSignedCert(name string) *certAuthenticator {
 	csrTemplate := &x509.CertificateRequest{
 		Subject: pkix.Name{
 			CommonName:   name,
-			Organization: []string{"Ziti Dev"},
+			Organization: []string{"ZT Dev"},
 			Country:      []string{"US"},
 			Province:     []string{"Anywhere"},
 			Locality:     []string{"Anytime"},

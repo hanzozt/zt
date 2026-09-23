@@ -27,16 +27,16 @@ import (
 	"github.com/fatih/color"
 
 	"github.com/blang/semver"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/zt/v2/common/version"
+	"github.com/michaelquigley/pfxlog"
 )
 
 func LogReleaseVersionCheck() {
 	logger := pfxlog.Logger()
-	if strings.ToLower(os.Getenv("ZITI_CHECK_VERSION")) == "true" {
-		logger.Debug("ZITI_CHECK_VERSION is true. starting version check")
+	if strings.ToLower(os.Getenv("ZT_CHECK_VERSION")) == "true" {
+		logger.Debug("ZT_CHECK_VERSION is true. starting version check")
 		developmentSemver, _ := semver.Parse("0.0.0")
-		latestGithubRelease, err := getzt.GetHighestVersionGitHubReleaseInfo(constants.HanzoZTOrg, constants.ZITI, false)
+		latestGithubRelease, err := getzt.GetHighestVersionGitHubReleaseInfo(constants.HanzoZTOrg, constants.ZT, false)
 		if err != nil {
 			logger.Debugf("failed to find latest GitHub version with error: %s", err)
 			return // soft-fail version check if GitHub API is unavailable
@@ -68,7 +68,7 @@ https://github.com/hanzozt/%s/releases/latest/
 `,
 				green("v"+latestGithubRelease.SemVer.String()),
 				yellow("v"+currentBuildSemver.String()),
-				constants.ZITI,
+				constants.ZT,
 			)
 			logger.Debugf(
 				"this v%s build of Hanzo ZT is superseded by v%s",
@@ -82,6 +82,6 @@ https://github.com/hanzozt/%s/releases/latest/
 			)
 		}
 	} else {
-		logger.Debug("ZITI_CHECK_VERSION is not 'true'. skipping version check")
+		logger.Debug("ZT_CHECK_VERSION is not 'true'. skipping version check")
 	}
 }

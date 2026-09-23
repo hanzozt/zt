@@ -39,8 +39,8 @@ import (
 
 type cliTestState struct {
 	homeDir             string
-	ztContext         *zt.Context
-	ztTransport       *http.Transport
+	ztContext           *zt.Context
+	ztTransport         *http.Transport
 	commonOpts          api.Options
 	externalZiti        testutil.Overlay
 	controllerUnderTest testutil.Overlay
@@ -56,9 +56,9 @@ func (s *cliTestState) removeZitiDir(t *testing.T) {
 }
 
 func Test_CLI_Test_Suite(t *testing.T) {
-	ztPath := os.Getenv("ZITI_CLI_TEST_ZITI_BIN")
+	ztPath := os.Getenv("ZT_CLI_TEST_ZT_BIN")
 	if ztPath == "" {
-		t.Fatalf("ZITI_CLI_TEST_ZITI_BIN not set")
+		t.Fatalf("ZT_CLI_TEST_ZT_BIN not set")
 	}
 	if _, statErr := os.Stat(ztPath); statErr != nil {
 		t.Fatalf("zt binary not found at provided location %s: %v", ztPath, statErr)
@@ -74,10 +74,10 @@ func Test_CLI_Test_Suite(t *testing.T) {
 
 	//testRunHome = filepath.Join(baseDir, "persistent")
 	os.MkdirAll(testRunHome, 0755)
-	// set ZITI_CONFIG_DIR so that anything here forth is not corrupting local stuff
+	// set ZT_CONFIG_DIR so that anything here forth is not corrupting local stuff
 	cfgDir := filepath.Join(testRunHome, ".config/underlay")
-	t.Logf("ZITI_CONFIG_DIR: %s", cfgDir)
-	_ = os.Setenv("ZITI_CONFIG_DIR", cfgDir)
+	t.Logf("ZT_CONFIG_DIR: %s", cfgDir)
+	_ = os.Setenv("ZT_CONFIG_DIR", cfgDir)
 	_ = os.RemoveAll(cfgDir)
 	externalCtx, externalCancel := context.WithCancel(context.Background())
 	defer externalCancel()
@@ -86,8 +86,8 @@ func Test_CLI_Test_Suite(t *testing.T) {
 
 	testState := &cliTestState{
 		homeDir:             testRunHome,
-		ztContext:         nil,
-		ztTransport:       nil,
+		ztContext:           nil,
+		ztTransport:         nil,
 		externalZiti:        testutil.CreateOverlay(t, externalCtx, 600*time.Second, testRunHome, "external", false),
 		controllerUnderTest: testutil.CreateOverlay(t, ctrlUnderTestCtx, 600*time.Second, testRunHome, "target", false),
 		commonOpts: api.Options{

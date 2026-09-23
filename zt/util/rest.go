@@ -99,11 +99,11 @@ func ControllerDetailEntity(api API, entityType, entityId string, logJSON bool, 
 	resp, err := req.Get(queryUrl)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to list entities at %v in Ziti Edge Controller at %v. Error: %v", queryUrl, baseUrl, err)
+		return nil, fmt.Errorf("unable to list entities at %v in the ZT controller at %v. Error: %v", queryUrl, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("error listing %v in Ziti Edge Controller. Status code: %v, Server returned: %v",
+		return nil, fmt.Errorf("error listing %v in the ZT controller. Status code: %v, Server returned: %v",
 			queryUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -161,11 +161,11 @@ func ControllerList(api API, path string, params url.Values, logJSON bool, out i
 	resp, err := req.Get(queryUrl)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to list entities at %v in Ziti Controller at %v. Error: %v", queryUrl, baseUrl, err)
+		return nil, fmt.Errorf("unable to list entities at %v in the ZT controller at %v. Error: %v", queryUrl, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("error listing %v in Ziti Edge Controller. Status code: %v, Server returned: %v",
+		return nil, fmt.Errorf("error listing %v in the ZT controller. Status code: %v, Server returned: %v",
 			queryUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -314,11 +314,11 @@ func ControllerCreate(api API, entityType string, body string, out io.Writer, lo
 	resp, err := req.SetBody(body).Post(url)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to create %v instance in Ziti Edge Controller at %v. Error: %v", entityType, baseUrl, err)
+		return nil, fmt.Errorf("unable to create %v instance in the ZT controller at %v. Error: %v", entityType, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusCreated {
-		return nil, fmt.Errorf("error creating %v instance in Ziti Edge Controller at %v. Status code: %v, Server returned: %v",
+		return nil, fmt.Errorf("error creating %v instance in the ZT controller at %v. Status code: %v, Server returned: %v",
 			entityType, baseUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -368,12 +368,12 @@ func ControllerDelete(api API, entityType string, id string, body string, out io
 	resp, err := req.Delete(fullUrl)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to delete %v instance in Ziti Edge Controller at %v. Error: %v", entityPath, baseUrl, err)
+		return nil, fmt.Errorf("unable to delete %v instance in the ZT controller at %v. Error: %v", entityPath, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
 		statusCode := resp.StatusCode()
-		return &statusCode, fmt.Errorf("error deleting %v instance in Ziti Edge Controller at %v. Status code: %v, Server returned: %v",
+		return &statusCode, fmt.Errorf("error deleting %v instance in the ZT controller at %v. Status code: %v, Server returned: %v",
 			entityPath, baseUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -412,11 +412,11 @@ func ControllerUpdate(api API, entityType string, body string, out io.Writer, me
 	resp, err := req.SetBody(body).Execute(method, url)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to update %v instance in Ziti Edge Controller at %v. Error: %v", entityType, baseUrl, err)
+		return nil, fmt.Errorf("unable to update %v instance in the ZT controller at %v. Error: %v", entityType, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK && resp.StatusCode() != http.StatusAccepted {
-		return nil, fmt.Errorf("error updating %v instance in Ziti Edge Controller at %v. Status code: %v, Server returned: %v",
+		return nil, fmt.Errorf("error updating %v instance in the ZT controller at %v. Status code: %v, Server returned: %v",
 			entityType, baseUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -462,11 +462,11 @@ func EdgeControllerVerify(entityType, id, body string, out io.Writer, logJSON bo
 		Post(baseUrl + "/" + entityType + "/" + id + "/verify")
 
 	if err != nil {
-		return fmt.Errorf("unable to verify %v instance [%s] in Ziti Edge Controller at %v. Error: %v", entityType, id, baseUrl, err)
+		return fmt.Errorf("unable to verify %v instance [%s] in the ZT controller at %v. Error: %v", entityType, id, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return fmt.Errorf("error verifying %v instance (%v) in Ziti Edge Controller at %v. Status code: %v, Server returned: %v",
+		return fmt.Errorf("error verifying %v instance (%v) in the ZT controller at %v. Status code: %v, Server returned: %v",
 			entityType, id, baseUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 
@@ -496,11 +496,11 @@ func EdgeControllerRequest(entityType string, out io.Writer, logJSON bool, timeo
 	resp, err := doRequest(request, baseUrl+"/"+entityType)
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to [%s] %v instance in Ziti Edge Controller at %v. Error: %v", request.Method, entityType, baseUrl, err)
+		return nil, fmt.Errorf("unable to [%s] %v instance in the ZT controller at %v. Error: %v", request.Method, entityType, baseUrl, err)
 	}
 
 	if resp.StatusCode() != http.StatusOK {
-		return nil, fmt.Errorf("error performing request [%s] %v instance in Ziti Edge Controller at %v. Status code: %v, Server returned: %v",
+		return nil, fmt.Errorf("error performing request [%s] %v instance in the ZT controller at %v. Status code: %v, Server returned: %v",
 			request.Method, entityType, baseUrl, resp.Status(), PrettyPrintResponse(resp))
 	}
 

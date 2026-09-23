@@ -68,7 +68,7 @@ type PKIFlags struct {
 
 var (
 	pkiLong = templates.LongDesc(`
-Provide the components needed to manage a Ziti PKI.
+Provide the components needed to manage a ZT PKI.
 	`)
 )
 

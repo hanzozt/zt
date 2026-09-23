@@ -45,7 +45,6 @@ import (
 	"github.com/go-openapi/strfmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/channel/v4"
 	"github.com/hanzozt/channel/v4/websockets"
 	"github.com/hanzozt/edge-api/rest_model"
@@ -73,6 +72,7 @@ import (
 	"github.com/hanzozt/zt/v2/router/enroll"
 	routerEnv "github.com/hanzozt/zt/v2/router/env"
 	"github.com/hanzozt/zt/v2/ztrest"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"gopkg.in/resty.v1"
@@ -147,7 +147,7 @@ func NewTestContext(t *testing.T) *TestContext {
 			Username: eid.New(),
 			Password: eid.New(),
 		},
-		LogLevel: os.Getenv("ZITI_TEST_LOG_LEVEL"),
+		LogLevel: os.Getenv("ZT_TEST_LOG_LEVEL"),
 	}
 	ret.testContextChanged(t)
 
@@ -410,7 +410,7 @@ func (ctx *TestContext) StartServerFor(testDb string, clean bool) {
 		}
 	}
 
-	err := os.Setenv("ZITI_TEST_DB", testDb)
+	err := os.Setenv("ZT_TEST_DB", testDb)
 	ctx.Req.NoError(err)
 
 	log.Info("loading config")

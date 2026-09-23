@@ -492,7 +492,7 @@ func generateCaSignedClientCert(caCert *x509.Certificate, caSigner crypto.Signer
 		SerialNumber: id,
 		Subject: pkix.Name{
 			CommonName:   commonName,
-			Organization: []string{"Ziti CLI Generated API Test Cert"},
+			Organization: []string{"ZT CLI Generated API Test Cert"},
 		},
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().Add(time.Minute * 10),

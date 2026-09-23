@@ -37,7 +37,6 @@ import (
 	"github.com/hanzozt/zt/v2/zt/enroll"
 
 	"github.com/google/uuid"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/zt/v2/common/version"
 	"github.com/hanzozt/zt/v2/controller/rest_client/cluster"
 	edgeSubCmd "github.com/hanzozt/zt/v2/controller/subcmd"
@@ -49,6 +48,7 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/pki"
 	"github.com/hanzozt/zt/v2/zt/constants"
 	"github.com/hanzozt/zt/v2/zt/util"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -84,7 +84,7 @@ func addCommonQuickstartFlags(cmd *cobra.Command, options *QuickstartOpts) {
 	currentRouterAddy := helpers.GetRouterAdvertisedAddress()
 	currentRouterPort := helpers.GetZitiEdgeRouterPort()
 	defaultCtrlPort, _ := strconv.ParseInt(constants.DefaultCtrlEdgeAdvertisedPort, 10, 16)
-	defaultRouterPort, _ := strconv.ParseInt(constants.DefaultZitiEdgeRouterPort, 10, 16)
+	defaultRouterPort, _ := strconv.ParseInt(constants.DefaultRouterPort, 10, 16)
 
 	cmd.Flags().StringVarP(&options.Username, "username", "u", "", "admin username, default: admin")
 	cmd.Flags().StringVarP(&options.Password, "password", "p", "", "admin password, default: admin")
@@ -235,11 +235,11 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 		_ = os.Setenv(constants.CtrlEdgeAdvertisedPortVarName, strconv.Itoa(int(o.ControllerPort)))
 	}
 	if o.RouterAddress != "" {
-		_ = os.Setenv(constants.ZitiEdgeRouterAdvertisedAddressVarName, o.RouterAddress)
+		_ = os.Setenv(constants.RouterAdvertisedAddressVarName, o.RouterAddress)
 	}
 	if o.RouterPort > 0 {
-		_ = os.Setenv(constants.ZitiEdgeRouterPortVarName, strconv.Itoa(int(o.RouterPort)))
-		_ = os.Setenv(constants.ZitiEdgeRouterListenerBindPortVarName, strconv.Itoa(int(o.RouterPort)))
+		_ = os.Setenv(constants.RouterPortVarName, strconv.Itoa(int(o.RouterPort)))
+		_ = os.Setenv(constants.RouterListenerBindPortVarName, strconv.Itoa(int(o.RouterPort)))
 	}
 	if o.Username == "" {
 		o.Username = "admin"
@@ -255,22 +255,22 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 	o.ConfigFile = path.Join(o.instHome(), "ctrl.yaml")
 	routerName := "router-" + o.InstanceID
 
-	//ZITI_HOME=/tmp zt create config controller | grep -v "#" | sed -E 's/^ *$//g' | sed '/^$/d'
-	_ = os.Setenv("ZITI_HOME", o.Home)
+	//ZT_HOME=/tmp zt create config controller | grep -v "#" | sed -E 's/^ *$//g' | sed '/^$/d'
+	_ = os.Setenv("ZT_HOME", o.Home)
 	pkiLoc := path.Join(o.Home, "pki")
 	rootLoc := path.Join(pkiLoc, "root-ca")
 	pkiIntermediateName := o.scopedName("intermediate-ca")
 	pkiServerName := o.scopedNameOff("server")
 	pkiClientName := o.scopedNameOff("client")
 	intermediateLoc := path.Join(pkiLoc, pkiIntermediateName)
-	_ = os.Setenv("ZITI_PKI_CTRL_CA", path.Join(rootLoc, "certs", "root-ca.cert"))
-	_ = os.Setenv("ZITI_PKI_CTRL_KEY", path.Join(intermediateLoc, "keys", pkiServerName+".key"))
-	_ = os.Setenv("ZITI_PKI_CTRL_SERVER_CERT", path.Join(intermediateLoc, "certs", pkiServerName+".chain.pem"))
-	_ = os.Setenv("ZITI_PKI_CTRL_CERT", path.Join(intermediateLoc, "certs", pkiClientName+".chain.pem"))
-	_ = os.Setenv("ZITI_PKI_SIGNER_CERT", path.Join(intermediateLoc, "certs", pkiIntermediateName+".cert"))
-	_ = os.Setenv("ZITI_PKI_SIGNER_KEY", path.Join(intermediateLoc, "keys", pkiIntermediateName+".key"))
+	_ = os.Setenv("ZT_PKI_CTRL_CA", path.Join(rootLoc, "certs", "root-ca.cert"))
+	_ = os.Setenv("ZT_PKI_CTRL_KEY", path.Join(intermediateLoc, "keys", pkiServerName+".key"))
+	_ = os.Setenv("ZT_PKI_CTRL_SERVER_CERT", path.Join(intermediateLoc, "certs", pkiServerName+".chain.pem"))
+	_ = os.Setenv("ZT_PKI_CTRL_CERT", path.Join(intermediateLoc, "certs", pkiClientName+".chain.pem"))
+	_ = os.Setenv("ZT_PKI_SIGNER_CERT", path.Join(intermediateLoc, "certs", pkiIntermediateName+".cert"))
+	_ = os.Setenv("ZT_PKI_SIGNER_KEY", path.Join(intermediateLoc, "keys", pkiIntermediateName+".key"))
 
-	routerNameFromEnv := os.Getenv(constants.ZitiEdgeRouterNameVarName)
+	routerNameFromEnv := os.Getenv(constants.RouterNameVarName)
 	if routerNameFromEnv != "" {
 		routerName = routerNameFromEnv
 	}
@@ -284,7 +284,7 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 
 		o.CreateMinimalPki()
 
-		_ = os.Setenv("ZITI_HOME", o.instHome())
+		_ = os.Setenv("ZT_HOME", o.instHome())
 		ctrl := create.NewCmdCreateConfigController()
 		args := []string{
 			fmt.Sprintf("--output=%s", o.ConfigFile),
@@ -526,7 +526,7 @@ func (o *QuickstartOpts) configureRouter(routerName string, configFile string, c
 
 		time.Sleep(1 * time.Second)
 
-		// zt edge create edge-router ${ZITI_HOSTNAME}-edge-router -o ${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.jwt -t -a public
+		// zt edge create edge-router ${ZT_HOSTNAME}-edge-router -o ${ZT_HOME}/${ZT_HOSTNAME}-edge-router.jwt -t -a public
 		createErCmd := edge.NewCreateEdgeRouterCmd(o.out, o.errOut)
 		createErCmd.SetArgs([]string{
 			routerName,
@@ -545,12 +545,12 @@ func (o *QuickstartOpts) configureRouter(routerName string, configFile string, c
 
 	// Create router config YAML if it doesn't exist yet (may have been skipped on a prior crashed run)
 	if _, err := os.Stat(configFile); os.IsNotExist(err) {
-		// zt create config router edge --routerName ${ZITI_HOSTNAME}-edge-router >${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.yaml
+		// zt create config router edge --routerName ${ZT_HOSTNAME}-edge-router >${ZT_HOME}/${ZT_HOSTNAME}-edge-router.yaml
 		opts := &create.CreateConfigRouterOptions{}
 
 		data := &create.ConfigTemplateValues{}
 		data.PopulateConfigValues()
-		create.SetZitiRouterIdentity(&data.Router, routerName)
+		create.SetRouterIdentity(&data.Router, routerName)
 		erCfg := create.NewCmdCreateConfigRouterEdge(opts, data)
 		erCfg.SetArgs([]string{
 			fmt.Sprintf("--routerName=%s", routerName),
@@ -580,7 +580,7 @@ func (o *QuickstartOpts) configureRouter(routerName string, configFile string, c
 			}
 		}
 
-		// zt router enroll ${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.yaml --jwt ${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.jwt
+		// zt router enroll ${ZT_HOME}/${ZT_HOSTNAME}-edge-router.yaml --jwt ${ZT_HOME}/${ZT_HOSTNAME}-edge-router.jwt
 		erEnroll := enroll.NewEnrollEdgeRouterCmd()
 		erEnroll.SetArgs([]string{
 			configFile,
@@ -609,7 +609,7 @@ func (o *QuickstartOpts) runRouter(configFile string) {
 	}
 
 	go func() {
-		// zt router run ${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.yaml &> ${ZITI_HOME}/${ZITI_HOSTNAME}-edge-router.log &
+		// zt router run ${ZT_HOME}/${ZT_HOSTNAME}-edge-router.yaml &> ${ZT_HOME}/${ZT_HOSTNAME}-edge-router.log &
 		erRunCmd := NewRunRouterCmd()
 		erRunCmd.SetArgs([]string{
 			configFile,
@@ -674,10 +674,10 @@ func (o *QuickstartOpts) CreateMinimalPki() {
 		logrus.Fatal(intErr)
 	}
 
-	//zt pki create server --pki-root="${ZITI_HOME}/pki" --ca-name "intermediate-ca" --server-name "server" --server-file "server" --dns "localhost,${ZITI_HOSTNAME}" --spiffe-id="whatever"
+	//zt pki create server --pki-root="${ZT_HOME}/pki" --ca-name "intermediate-ca" --server-name "server" --server-file "server" --dns "localhost,${ZT_HOSTNAME}" --spiffe-id="whatever"
 	svr := pki.NewCmdPKICreateServer(o.out, o.errOut)
 	var ips = "127.0.0.1,::1"
-	ipOverride := os.Getenv("ZITI_CTRL_EDGE_IP_OVERRIDE")
+	ipOverride := os.Getenv("ZT_CTRL_EDGE_IP_OVERRIDE")
 	if ipOverride != "" {
 		ips = ips + "," + ipOverride
 	}
@@ -697,7 +697,7 @@ func (o *QuickstartOpts) CreateMinimalPki() {
 		logrus.Fatal(svrErr)
 	}
 
-	//zt pki create client --pki-root="${ZITI_HOME}/pki" --ca-name "intermediate-ca" --client-name "client" --client-file "client" --key-file "server" --spiffe-id="whatever"
+	//zt pki create client --pki-root="${ZT_HOME}/pki" --ca-name "intermediate-ca" --client-name "client" --client-file "client" --key-file "server" --spiffe-id="whatever"
 	client := pki.NewCmdPKICreateClient(o.out, o.errOut)
 	client.SetArgs([]string{
 		fmt.Sprintf("--pki-root=%s", where),

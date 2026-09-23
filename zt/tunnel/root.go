@@ -26,7 +26,6 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/common"
 	"github.com/hanzozt/zt/v2/zt/util"
 
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/agent"
 	"github.com/hanzozt/sdk-golang/zt"
 	"github.com/hanzozt/zt/v2/common/version"
@@ -34,15 +33,16 @@ import (
 	"github.com/hanzozt/zt/v2/tunnel/dns"
 	"github.com/hanzozt/zt/v2/tunnel/entities"
 	"github.com/hanzozt/zt/v2/tunnel/intercept"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 const (
-	svcPollRateFlag   = "svcPollRate"
-	resolverCfgFlag   = "resolver"
-	dnsSvcIpRangeFlag = "dnsSvcIpRange"
-	dnsUpstreamFlag   = "dnsUpstream"
+	svcPollRateFlag     = "svcPollRate"
+	resolverCfgFlag     = "resolver"
+	dnsSvcIpRangeFlag   = "dnsSvcIpRange"
+	dnsUpstreamFlag     = "dnsUpstream"
 	dnsUnanswerableFlag = "dnsUnanswerable"
 )
 
@@ -51,7 +51,7 @@ var hostSpecificCmds []func() *cobra.Command
 func NewTunnelCmd(legacy bool) *cobra.Command {
 	var root = &cobra.Command{
 		Use:              "tunnel",
-		Short:            "Ziti Tunnel",
+		Short:            "ZT Tunnel",
 		PersistentPreRun: rootPreRun,
 		Hidden:           true,
 	}

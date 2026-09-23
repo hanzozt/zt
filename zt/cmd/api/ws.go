@@ -24,12 +24,12 @@ import (
 	"time"
 
 	"github.com/gorilla/websocket"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/channel/v4"
 	"github.com/hanzozt/channel/v4/websockets"
 	"github.com/hanzozt/identity"
 	"github.com/hanzozt/sdk-golang/zt"
 	"github.com/hanzozt/zt/v2/zt/util"
+	"github.com/michaelquigley/pfxlog"
 )
 
 func NewWsMgmtChannel(bindHandler channel.BindHandler) (channel.Channel, error) {
@@ -65,7 +65,7 @@ func NewWsMgmtChannel(bindHandler channel.BindHandler) (channel.Channel, error) 
 		return nil, err
 	}
 
-	ztfiedDialer := util.NewZitiDialContext(zc, zt.DialOptions{Identity: at})
+	ztfiedDialer := util.NewDialContext(zc, zt.DialOptions{Identity: at})
 	dialer := &websocket.Dialer{
 		Proxy:            http.ProxyFromEnvironment,
 		TLSClientConfig:  tlsConfig,

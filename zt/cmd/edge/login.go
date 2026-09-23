@@ -31,7 +31,6 @@ import (
 	"time"
 
 	"github.com/Jeffail/gabs"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/edge-api/rest_client_api_client"
 	"github.com/hanzozt/edge-api/rest_util"
 	"github.com/hanzozt/foundation/v2/term"
@@ -43,6 +42,7 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/common"
 	"github.com/hanzozt/zt/v2/zt/constants"
 	"github.com/hanzozt/zt/v2/zt/util"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	xterm "golang.org/x/term"
@@ -526,18 +526,18 @@ func (o *LoginOptions) terminatorId() string {
 func (o *LoginOptions) createHttpTransport() (*http.Transport, error) {
 	// if cli param supplied - use it first
 	if o.NetworkId != "" {
-		t, e := util.NewZitifiedTransportFromFile(o.NetworkId, o.terminatorId())
+		t, e := util.NewTransportFromFile(o.NetworkId, o.terminatorId())
 		o.transport = t
 		return t, e
 	}
 
 	// if env var set - use it
-	if zt, zte := util.ZitifiedTransportFromEnv(o.terminatorId()); zte != nil {
-		o.Printf("NetworkId found by env var [%s] but failed: %v\n", constants.ZitiCliNetworkIdVarName, zte)
+	if zt, zte := util.TransportFromEnv(o.terminatorId()); zte != nil {
+		o.Printf("NetworkId found by env var [%s] but failed: %v\n", constants.CliNetworkIdVarName, zte)
 		return nil, zte
 	} else {
 		if zt != nil {
-			o.Printf("NetworkId found by env var [%s], ztfied transport enabled\n", constants.ZitiCliNetworkIdVarName)
+			o.Printf("NetworkId found by env var [%s], ztfied transport enabled\n", constants.CliNetworkIdVarName)
 			o.NetworkId = ""
 			o.transport = zt
 			return zt, nil

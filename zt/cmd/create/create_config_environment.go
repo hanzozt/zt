@@ -92,7 +92,7 @@ func NewCmdCreateConfigEnvironment() *cobra.Command {
 		PreRun: func(cmd *cobra.Command, args []string) {
 			data.PopulateConfigValues()
 			// Set router identities
-			SetZitiRouterIdentity(&data.Router, validateRouterName(os.Getenv(constants.ZitiEdgeRouterNameVarName)))
+			SetRouterIdentity(&data.Router, validateRouterName(os.Getenv(constants.RouterNameVarName)))
 			// Set up other identity info
 			SetControllerIdentity(&data.Controller)
 			SetEdgeConfig(&data.Controller)
@@ -100,8 +100,8 @@ func NewCmdCreateConfigEnvironment() *cobra.Command {
 			SetConsoleConfig(&data.Controller.Web.BindPoints.Console)
 
 			environmentOptions.EnvVars = []EnvVar{
-				{constants.ZitiHomeVarName, constants.ZitiHomeVarDescription, data.ZitiHome},
-				{constants.ZitiNetworkNameVarName, constants.ZitiNetworkNameVarDescription, data.HostnameOrNetworkName},
+				{constants.HomeVarName, constants.HomeVarDescription, data.Home},
+				{constants.NetworkNameVarName, constants.NetworkNameVarDescription, data.HostnameOrNetworkName},
 				{constants.PkiCtrlCertVarName, constants.PkiCtrlCertVarDescription, data.Controller.Identity.Cert},
 				{constants.PkiCtrlServerCertVarName, constants.PkiCtrlServerCertVarDescription, data.Controller.Identity.ServerCert},
 				{constants.PkiCtrlKeyVarName, constants.PkiCtrlKeyVarDescription, data.Controller.Identity.Key},
@@ -127,23 +127,23 @@ func NewCmdCreateConfigEnvironment() *cobra.Command {
 				{constants.CtrlPkiEdgeCAVarName, constants.CtrlPkiEdgeCAVarDescription, data.Controller.Web.Identity.Ca},
 				{constants.PkiAltServerCertVarName, constants.PkiAltServerCertVarDescription, data.Controller.Web.Identity.AltServerCert},
 				{constants.PkiAltServerKeyVarName, constants.PkiAltServerKeyVarDescription, data.Controller.Web.Identity.AltServerKey},
-				{constants.ZitiEdgeRouterNameVarName, constants.ZitiEdgeRouterNameVarDescription, data.Router.Name},
-				{constants.ZitiEdgeRouterPortVarName, constants.ZitiEdgeRouterPortVarDescription, data.Router.Edge.Port},
-				{constants.ZitiEdgeRouterListenerBindPortVarName, constants.ZitiEdgeRouterListenerBindPortVarDescription, data.Router.Edge.ListenerBindPort},
-				{constants.ZitiRouterIdentityCertVarName, constants.ZitiRouterIdentityCertVarDescription, data.Router.IdentityCert},
-				{constants.ZitiRouterIdentityServerCertVarName, constants.ZitiRouterIdentityServerCertVarDescription, data.Router.IdentityServerCert},
-				{constants.ZitiRouterIdentityKeyVarName, constants.ZitiRouterIdentityKeyVarDescription, data.Router.IdentityKey},
-				{constants.ZitiRouterIdentityCAVarName, constants.ZitiRouterIdentityCAVarDescription, data.Router.IdentityCA},
-				{constants.ZitiEdgeRouterIPOverrideVarName, constants.ZitiEdgeRouterIPOverrideVarDescription, data.Router.Edge.IPOverride},
-				{constants.ZitiEdgeRouterAdvertisedAddressVarName, constants.ZitiEdgeRouterAdvertisedAddressVarDescription, data.Router.Edge.AdvertisedHost},
-				{constants.ZitiEdgeRouterResolverVarName, constants.ZitiEdgeRouterResolverVarDescription, data.Router.Edge.Resolver},
-				{constants.ZitiEdgeRouterDnsSvcIpRangeVarName, constants.ZitiEdgeRouterDnsSvcIpRangeVarDescription, data.Router.Edge.DnsSvcIpRange},
-				{constants.ZitiEdgeRouterCsrCVarName, constants.ZitiEdgeRouterCsrCVarDescription, data.Router.Edge.CsrC},
-				{constants.ZitiEdgeRouterCsrSTVarName, constants.ZitiEdgeRouterCsrSTVarDescription, data.Router.Edge.CsrST},
-				{constants.ZitiEdgeRouterCsrLVarName, constants.ZitiEdgeRouterCsrLVarDescription, data.Router.Edge.CsrL},
-				{constants.ZitiEdgeRouterCsrOVarName, constants.ZitiEdgeRouterCsrOVarDescription, data.Router.Edge.CsrO},
-				{constants.ZitiEdgeRouterCsrOUVarName, constants.ZitiEdgeRouterCsrOUVarDescription, data.Router.Edge.CsrOU},
-				{constants.ZitiRouterCsrSansDnsVarName, constants.ZitiRouterCsrSansDnsVarDescription, data.Router.Edge.CsrSans},
+				{constants.RouterNameVarName, constants.RouterNameVarDescription, data.Router.Name},
+				{constants.RouterPortVarName, constants.RouterPortVarDescription, data.Router.Edge.Port},
+				{constants.RouterListenerBindPortVarName, constants.RouterListenerBindPortVarDescription, data.Router.Edge.ListenerBindPort},
+				{constants.RouterIdentityCertVarName, constants.RouterIdentityCertVarDescription, data.Router.IdentityCert},
+				{constants.RouterIdentityServerCertVarName, constants.RouterIdentityServerCertVarDescription, data.Router.IdentityServerCert},
+				{constants.RouterIdentityKeyVarName, constants.RouterIdentityKeyVarDescription, data.Router.IdentityKey},
+				{constants.RouterIdentityCAVarName, constants.RouterIdentityCAVarDescription, data.Router.IdentityCA},
+				{constants.RouterIPOverrideVarName, constants.RouterIPOverrideVarDescription, data.Router.Edge.IPOverride},
+				{constants.RouterAdvertisedAddressVarName, constants.RouterAdvertisedAddressVarDescription, data.Router.Edge.AdvertisedHost},
+				{constants.RouterResolverVarName, constants.RouterResolverVarDescription, data.Router.Edge.Resolver},
+				{constants.RouterDnsSvcIpRangeVarName, constants.RouterDnsSvcIpRangeVarDescription, data.Router.Edge.DnsSvcIpRange},
+				{constants.RouterCsrCVarName, constants.RouterCsrCVarDescription, data.Router.Edge.CsrC},
+				{constants.RouterCsrSTVarName, constants.RouterCsrSTVarDescription, data.Router.Edge.CsrST},
+				{constants.RouterCsrLVarName, constants.RouterCsrLVarDescription, data.Router.Edge.CsrL},
+				{constants.RouterCsrOVarName, constants.RouterCsrOVarDescription, data.Router.Edge.CsrO},
+				{constants.RouterCsrOUVarName, constants.RouterCsrOUVarDescription, data.Router.Edge.CsrOU},
+				{constants.RouterCsrSansDnsVarName, constants.RouterCsrSansDnsVarDescription, data.Router.Edge.CsrSans},
 			}
 
 			// Setup logging
@@ -186,8 +186,8 @@ func NewCmdCreateConfigEnvironment() *cobra.Command {
 
 	sb.WriteString("Creates an env file for generating a controller or router config YAML." +
 		"\nThe following can be set to override defaults:\n")
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiHomeVarName, constants.ZitiHomeVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiNetworkNameVarName, constants.ZitiNetworkNameVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.HomeVarName, constants.HomeVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.NetworkNameVarName, constants.NetworkNameVarDescription)
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.PkiCtrlCertVarName, constants.PkiCtrlCertVarDescription)
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.PkiCtrlServerCertVarName, constants.PkiCtrlServerCertVarDescription)
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.PkiCtrlKeyVarName, constants.PkiCtrlKeyVarDescription)
@@ -211,23 +211,23 @@ func NewCmdCreateConfigEnvironment() *cobra.Command {
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.CtrlPkiEdgeCAVarName, constants.CtrlPkiEdgeCAVarDescription)
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.PkiAltServerCertVarName, constants.PkiAltServerCertVarDescription)
 	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.PkiAltServerKeyVarName, constants.PkiAltServerKeyVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterNameVarName, constants.ZitiEdgeRouterNameVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterPortVarName, constants.ZitiEdgeRouterPortVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterListenerBindPortVarName, constants.ZitiEdgeRouterListenerBindPortVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiRouterIdentityCertVarName, constants.ZitiRouterIdentityCertVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiRouterIdentityServerCertVarName, constants.ZitiRouterIdentityServerCertVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiRouterIdentityKeyVarName, constants.ZitiRouterIdentityKeyVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiRouterIdentityCAVarName, constants.ZitiRouterIdentityCAVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterIPOverrideVarName, constants.ZitiEdgeRouterIPOverrideVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterAdvertisedAddressVarName, constants.ZitiEdgeRouterAdvertisedAddressVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterResolverVarName, constants.ZitiEdgeRouterResolverVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterDnsSvcIpRangeVarName, constants.ZitiEdgeRouterDnsSvcIpRangeVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterCsrCVarName, constants.ZitiEdgeRouterCsrCVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterCsrSTVarName, constants.ZitiEdgeRouterCsrSTVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterCsrLVarName, constants.ZitiEdgeRouterCsrLVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterCsrOVarName, constants.ZitiEdgeRouterCsrOVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiEdgeRouterCsrOUVarName, constants.ZitiEdgeRouterCsrOUVarDescription)
-	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.ZitiRouterCsrSansDnsVarName, constants.ZitiRouterCsrSansDnsVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterNameVarName, constants.RouterNameVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterPortVarName, constants.RouterPortVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterListenerBindPortVarName, constants.RouterListenerBindPortVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterIdentityCertVarName, constants.RouterIdentityCertVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterIdentityServerCertVarName, constants.RouterIdentityServerCertVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterIdentityKeyVarName, constants.RouterIdentityKeyVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterIdentityCAVarName, constants.RouterIdentityCAVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterIPOverrideVarName, constants.RouterIPOverrideVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterAdvertisedAddressVarName, constants.RouterAdvertisedAddressVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterResolverVarName, constants.RouterResolverVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterDnsSvcIpRangeVarName, constants.RouterDnsSvcIpRangeVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrCVarName, constants.RouterCsrCVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrSTVarName, constants.RouterCsrSTVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrLVarName, constants.RouterCsrLVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrOVarName, constants.RouterCsrOVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrOUVarName, constants.RouterCsrOUVarDescription)
+	fmt.Fprintf(&sb, "%-40s %-50s\n", constants.RouterCsrSansDnsVarName, constants.RouterCsrSansDnsVarDescription)
 
 	cmd.Long = sb.String()
 

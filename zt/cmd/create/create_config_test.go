@@ -33,65 +33,65 @@ const (
 	testDefaultEdgeRouterEnrollmentStr        = "180m"
 )
 
-func getZitiEnvironmentVariables() []string {
+func getEnvironmentVariables() []string {
 	return []string{
-		"ZITI_HOME",
-		"ZITI_ROUTER_NAME",
-		"ZITI_ROUTER_PORT",
-		"ZITI_PKI_CTRL_CERT",
-		"ZITI_PKI_CTRL_SERVER_CERT",
-		"ZITI_PKI_CTRL_KEY",
-		"ZITI_PKI_CTRL_CA",
-		"ZITI_CTRL_BIND_ADDRESS",
-		"ZITI_CTRL_ADVERTISED_ADDRESS",
-		"ZITI_CTRL_DATABASE_FILE",
-		"ZITI_CTRL_EDGE_ALT_ADVERTISED_ADDRESS",
-		"ZITI_CTRL_ADVERTISED_PORT",
-		"ZITI_CONSOLE_LOCATION",
-		"ZITI_PKI_SIGNER_CERT",
-		"ZITI_PKI_SIGNER_KEY",
-		"ZITI_CTRL_EDGE_ADVERTISED_ADDRESS",
-		"ZITI_CTRL_EDGE_ADVERTISED_PORT",
-		"ZITI_PKI_EDGE_CA",
-		"ZITI_PKI_EDGE_KEY",
-		"ZITI_PKI_EDGE_SERVER_CERT",
-		"ZITI_PKI_EDGE_CERT",
-		"ZITI_ROUTER_IDENTITY_CERT",
-		"ZITI_ROUTER_IDENTITY_SERVER_CERT",
-		"ZITI_ROUTER_IDENTITY_KEY",
-		"ZITI_ROUTER_IDENTITY_CA",
-		"ZITI_ROUTER_IP_OVERRIDE",
-		"ZITI_ROUTER_TPROXY_RESOLVER",
-		"ZITI_ROUTER_DNS_IP_RANGE",
-		"ZITI_NETWORK_NAME",
-		"ZITI_EDGE_IDENTITY_ENROLLMENT_DURATION",
-		"ZITI_ROUTER_ENROLLMENT_DURATION",
-		"ZITI_ROUTER_ADVERTISED_ADDRESS",
-		"ZITI_ROUTER_LISTENER_BIND_PORT",
-		"ZITI_PKI_ALT_SERVER_CERT",
-		"ZITI_PKI_ALT_SERVER_KEY",
-		"ZITI_CTRL_EDGE_BIND_ADDRESS",
-		"ZITI_ROUTER_CSR_C",
-		"ZITI_ROUTER_CSR_ST",
-		"ZITI_ROUTER_CSR_L",
-		"ZITI_ROUTER_CSR_O",
-		"ZITI_ROUTER_CSR_OU",
-		"ZITI_ROUTER_CSR_SANS_DNS",
+		"ZT_HOME",
+		"ZT_ROUTER_NAME",
+		"ZT_ROUTER_PORT",
+		"ZT_PKI_CTRL_CERT",
+		"ZT_PKI_CTRL_SERVER_CERT",
+		"ZT_PKI_CTRL_KEY",
+		"ZT_PKI_CTRL_CA",
+		"ZT_CTRL_BIND_ADDRESS",
+		"ZT_CTRL_ADVERTISED_ADDRESS",
+		"ZT_CTRL_DATABASE_FILE",
+		"ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS",
+		"ZT_CTRL_ADVERTISED_PORT",
+		"ZT_CONSOLE_LOCATION",
+		"ZT_PKI_SIGNER_CERT",
+		"ZT_PKI_SIGNER_KEY",
+		"ZT_CTRL_EDGE_ADVERTISED_ADDRESS",
+		"ZT_CTRL_EDGE_ADVERTISED_PORT",
+		"ZT_PKI_EDGE_CA",
+		"ZT_PKI_EDGE_KEY",
+		"ZT_PKI_EDGE_SERVER_CERT",
+		"ZT_PKI_EDGE_CERT",
+		"ZT_ROUTER_IDENTITY_CERT",
+		"ZT_ROUTER_IDENTITY_SERVER_CERT",
+		"ZT_ROUTER_IDENTITY_KEY",
+		"ZT_ROUTER_IDENTITY_CA",
+		"ZT_ROUTER_IP_OVERRIDE",
+		"ZT_ROUTER_TPROXY_RESOLVER",
+		"ZT_ROUTER_DNS_IP_RANGE",
+		"ZT_NETWORK_NAME",
+		"ZT_EDGE_IDENTITY_ENROLLMENT_DURATION",
+		"ZT_ROUTER_ENROLLMENT_DURATION",
+		"ZT_ROUTER_ADVERTISED_ADDRESS",
+		"ZT_ROUTER_LISTENER_BIND_PORT",
+		"ZT_PKI_ALT_SERVER_CERT",
+		"ZT_PKI_ALT_SERVER_KEY",
+		"ZT_CTRL_EDGE_BIND_ADDRESS",
+		"ZT_ROUTER_CSR_C",
+		"ZT_ROUTER_CSR_ST",
+		"ZT_ROUTER_CSR_L",
+		"ZT_ROUTER_CSR_O",
+		"ZT_ROUTER_CSR_OU",
+		"ZT_ROUTER_CSR_SANS_DNS",
 	}
 }
 
 func unsetZitiEnv() {
 	// Unset environment variables
-	envVars := getZitiEnvironmentVariables()
+	envVars := getEnvironmentVariables()
 	for i := 0; i < len(envVars); i++ {
 		_ = os.Unsetenv(envVars[i])
 	}
 }
 
-// Test that all ZITI_* variables are included in the values for output
+// Test that all ZT_* variables are included in the values for output
 func TestNoUnknownOutputEnvVariablesExist(t *testing.T) {
-	// Get the list of ZITI_* environment variables
-	allEnvVars := getZitiEnvironmentVariables()
+	// Get the list of ZT_* environment variables
+	allEnvVars := getEnvironmentVariables()
 
 	// Run the environment options command and capture stdout
 	cmd := NewCmdCreateConfigEnvironment()
@@ -103,10 +103,10 @@ func TestNoUnknownOutputEnvVariablesExist(t *testing.T) {
 	// Split the output on newlines
 	lines := strings.Split(output, "\n")
 	// Check that every known environment variable is represented in the env file output
-	prefix := "ZITI_"
+	prefix := "ZT_"
 	var unknownValues []string
 	for _, line := range lines {
-		// Only look at lines with a ZITI_* env var
+		// Only look at lines with a ZT_* env var
 		if !strings.Contains(line, prefix) {
 			continue
 		}
@@ -125,14 +125,14 @@ func TestNoUnknownOutputEnvVariablesExist(t *testing.T) {
 
 	assert.Zero(t, len(unknownValues))
 	for _, value := range unknownValues {
-		fmt.Printf("The variable %s was found in env command output but was not expected.\n  -If this is a new variable, add it to the ZITI env variables list in create_config_test.getZitiEnvironmentVariables().\n  -If this variable was removed, remove the variable from the env command output.\n", value)
+		fmt.Printf("The variable %s was found in env command output but was not expected.\n  -If this is a new variable, add it to the ZT env variables list in create_config_test.getEnvironmentVariables().\n  -If this variable was removed, remove the variable from the env command output.\n", value)
 	}
 }
 
-// Test that all known ZITI_* variables are included in the env file
+// Test that all known ZT_* variables are included in the env file
 func TestAllKnownEnvVariablesAreFoundInOutput(t *testing.T) {
-	// Get the list of ZITI_* environment variables
-	allEnvVars := getZitiEnvironmentVariables()
+	// Get the list of ZT_* environment variables
+	allEnvVars := getEnvironmentVariables()
 
 	// Run the environment options command and capture stdout
 	cmd := NewCmdCreateConfigEnvironment()
@@ -162,14 +162,14 @@ func TestAllKnownEnvVariablesAreFoundInOutput(t *testing.T) {
 
 	assert.Zero(t, len(unfoundVariables))
 	for _, value := range unfoundVariables {
-		fmt.Printf("The variable %s was expected in env command output but was not found.\n  -If this is variable was removed, remove it from the ZITI env variables list in create_config_test.\n  -If this is a new variable, add it to the env command output.\n", value)
+		fmt.Printf("The variable %s was expected in env command output but was not found.\n  -If this is variable was removed, remove it from the ZT env variables list in create_config_test.\n  -If this is a new variable, add it to the env command output.\n", value)
 	}
 }
 
-// Test that all known ZITI_* variables are included in the help output
+// Test that all known ZT_* variables are included in the help output
 func TestAllKnownEnvVariablesAreFoundInHelpOutput(t *testing.T) {
-	// Get the list of ZITI_* environment variables
-	allEnvVars := getZitiEnvironmentVariables()
+	// Get the list of ZT_* environment variables
+	allEnvVars := getEnvironmentVariables()
 
 	// Run the environment options command and capture stdout from help
 	cmd := NewCmdCreateConfigEnvironment()
@@ -198,14 +198,14 @@ func TestAllKnownEnvVariablesAreFoundInHelpOutput(t *testing.T) {
 
 	assert.Zero(t, len(unfoundVariables))
 	for _, value := range unfoundVariables {
-		fmt.Printf("The variable %s was expected in env command's help output but was not found.\n  -If this is variable was removed, remove it from the ZITI env variables list in create_config_test.getZitiEnvironmentVariables().\n  -If this is a new variable, add it to the env command's help output.\n", value)
+		fmt.Printf("The variable %s was expected in env command's help output but was not found.\n  -If this is variable was removed, remove it from the ZT env variables list in create_config_test.getEnvironmentVariables().\n  -If this is a new variable, add it to the env command's help output.\n", value)
 	}
 }
 
-// Test that all ZITI_* variables are included in the values for help output
+// Test that all ZT_* variables are included in the values for help output
 func TestNoUnknownHelpEnvVariablesExist(t *testing.T) {
-	// Get the list of ZITI_* environment variables
-	allEnvVars := getZitiEnvironmentVariables()
+	// Get the list of ZT_* environment variables
+	allEnvVars := getEnvironmentVariables()
 
 	// Run the environment options command and capture stdout from help
 	cmd := NewCmdCreateConfigEnvironment()
@@ -217,10 +217,10 @@ func TestNoUnknownHelpEnvVariablesExist(t *testing.T) {
 	// Split the output on newlines
 	lines := strings.Split(output, "\n")
 	// Check that every known environment variable is represented in the env file output
-	prefix := "ZITI_"
+	prefix := "ZT_"
 	var unknownValues []string
 	for _, line := range lines {
-		// Only look at lines with a ZITI_* env var
+		// Only look at lines with a ZT_* env var
 		if !strings.HasPrefix(line, prefix) {
 			continue
 		}
@@ -239,7 +239,7 @@ func TestNoUnknownHelpEnvVariablesExist(t *testing.T) {
 
 	assert.Zero(t, len(unknownValues))
 	for _, value := range unknownValues {
-		fmt.Printf("The variable %s was found in env command's help output but was not expected.\n  -If this is a new variable, add it to the ZITI env variables list in create_config_test.\n  -If this variable was removed, remove the variable from the env command's help output.\n", value)
+		fmt.Printf("The variable %s was found in env command's help output but was not expected.\n  -If this is a new variable, add it to the ZT env variables list in create_config_test.\n  -If this variable was removed, remove the variable from the env command's help output.\n", value)
 	}
 }
 

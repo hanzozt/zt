@@ -244,7 +244,7 @@ func (o *PKICreateOptions) ObtainCAName(pkiRoot string) (string, error) {
 					}
 				}
 			}
-			caName, err = util.PickName(names, "Required flag 'ca-name' not specified; choose from below (dirs seen in your ZITI_PKI_ROOT):")
+			caName, err = util.PickName(names, "Required flag 'ca-name' not specified; choose from below (dirs seen in your ZT_PKI_ROOT):")
 			if err != nil {
 				return "", err
 			}
@@ -324,7 +324,7 @@ func (o *PKICreateOptions) ObtainKeyName(pkiRoot string) (string, error) {
 				names = append(names, f.Name())
 			}
 		}
-		keyName, err = util.PickName(names, "Required flag 'key-name' not specified; choose from below (dirs seen in your ZITI_PKI_ROOT):")
+		keyName, err = util.PickName(names, "Required flag 'key-name' not specified; choose from below (dirs seen in your ZT_PKI_ROOT):")
 		if err != nil {
 			return "", err
 		}

@@ -236,7 +236,7 @@ func generateCert(options *verifyCaOptions, token string) ([]byte, crypto.Signer
 		SerialNumber: id,
 		Subject: pkix.Name{
 			CommonName:   token,
-			Organization: []string{"Ziti CLI Generated Validation Cert"},
+			Organization: []string{"ZT CLI Generated Validation Cert"},
 		},
 		NotBefore: time.Now(),
 		NotAfter:  time.Now().Add(time.Minute * 5),

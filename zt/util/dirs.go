@@ -38,7 +38,7 @@ func HomeDir() string {
 }
 
 func ConfigDir() (string, error) {
-	path := os.Getenv("ZITI_CONFIG_DIR")
+	path := os.Getenv("ZT_CONFIG_DIR")
 	if path != "" {
 		return path, nil
 	}

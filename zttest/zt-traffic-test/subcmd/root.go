@@ -31,7 +31,7 @@ func init() {
 
 var Root = &cobra.Command{
 	Use:   filepath.Base(os.Args[0]),
-	Short: "Ziti Traffic Test Toolbox",
+	Short: "ZT Traffic Test Toolbox",
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if verbose {
 			logrus.SetLevel(logrus.DebugLevel)

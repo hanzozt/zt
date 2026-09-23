@@ -22,21 +22,21 @@ func TestEdgeRouterAdvertisedAddress(t *testing.T) {
 	routerAdvHostIp := "192.168.10.10"
 	routerAdvHostDns := "controller01.ztnetwork.example.org"
 	keys := map[string]string{
-		"ZITI_CTRL_ADVERTISED_PORT": "80",
-		"ZITI_ROUTER_PORT":          "443",
+		"ZT_CTRL_ADVERTISED_PORT": "80",
+		"ZT_ROUTER_PORT":          "443",
 	}
 	// Defaults to hostname if nothing is set
 	_, data := createRouterConfig(defaultArgs, routerOpts, keys)
 	require.Equal(t, testHostname, data.Router.Edge.AdvertisedHost, nil)
 
 	// If IP override set, uses that value over hostname
-	keys["ZITI_ROUTER_IP_OVERRIDE"] = routerAdvHostIp
+	keys["ZT_ROUTER_IP_OVERRIDE"] = routerAdvHostIp
 	_, data2 := createRouterConfig(defaultArgs, routerOpts, keys)
 	require.Equal(t, routerAdvHostIp, data2.Router.Edge.AdvertisedHost, nil)
 
 	// If advertised address set, uses that over IP override or hostname
-	keys["ZITI_ROUTER_ADVERTISED_ADDRESS"] = routerAdvHostDns
-	keys["ZITI_ROUTER_IP_OVERRIDE"] = routerAdvHostIp
+	keys["ZT_ROUTER_ADVERTISED_ADDRESS"] = routerAdvHostDns
+	keys["ZT_ROUTER_IP_OVERRIDE"] = routerAdvHostIp
 	_, data3 := createRouterConfig(defaultArgs, routerOpts, keys)
 	require.Equal(t, routerAdvHostDns, data3.Router.Edge.AdvertisedHost, nil)
 }
@@ -162,7 +162,7 @@ func TestDefaultZitiEdgeRouterListenerBindPort(t *testing.T) {
 	expectedDefaultPortStr := strconv.Itoa(testDefaultRouterListenerPort)
 
 	// Make sure the related env vars are unset
-	_ = os.Unsetenv("ZITI_ROUTER_LISTENER_BIND_PORT")
+	_ = os.Unsetenv("ZT_ROUTER_LISTENER_BIND_PORT")
 
 	// Create and run the CLI command
 	config, data := createRouterConfig([]string{"edge", "--routerName", "testRouter"}, routerOptions, nil)
@@ -186,7 +186,7 @@ func TestSetZitiEdgeRouterListenerBindPort(t *testing.T) {
 	myPortValue := "1234"
 
 	// Set the port manually
-	_ = os.Setenv("ZITI_ROUTER_LISTENER_BIND_PORT", myPortValue)
+	_ = os.Setenv("ZT_ROUTER_LISTENER_BIND_PORT", myPortValue)
 
 	// Create and run the CLI command
 	config, data := createRouterConfig([]string{"edge", "--routerName", "testRouter"}, routerOptions, nil)
@@ -238,8 +238,8 @@ func TestExecuteCreateConfigRouterEdgeHasNonBlankTemplateValues(t *testing.T) {
 	// Create and run the CLI command
 	_, data := createRouterConfig([]string{"edge", "--routerName", routerName}, routerOptions, nil)
 
-	expectedNonEmptyStringFields := []string{".Router.Edge.ListenerBindPort", ".ZitiHome", ".Hostname", ".Router.Name", ".Router.IdentityCert", ".Router.IdentityServerCert", ".Router.IdentityKey", ".Router.IdentityCA", ".Router.Edge.Port"}
-	expectedNonEmptyStringValues := []*string{&data.Router.Edge.ListenerBindPort, &data.ZitiHome, &data.HostnameOrNetworkName, &data.Router.Name, &data.Router.IdentityCert, &data.Router.IdentityServerCert, &data.Router.IdentityKey, &data.Router.IdentityCA, &data.Router.Edge.Port}
+	expectedNonEmptyStringFields := []string{".Router.Edge.ListenerBindPort", ".Home", ".Hostname", ".Router.Name", ".Router.IdentityCert", ".Router.IdentityServerCert", ".Router.IdentityKey", ".Router.IdentityCA", ".Router.Edge.Port"}
+	expectedNonEmptyStringValues := []*string{&data.Router.Edge.ListenerBindPort, &data.Home, &data.HostnameOrNetworkName, &data.Router.Name, &data.Router.IdentityCert, &data.Router.IdentityServerCert, &data.Router.IdentityKey, &data.Router.IdentityCA, &data.Router.Edge.Port}
 	expectedNonEmptyIntFields := []string{".Router.Listener.OutQueueSize", ".Router.Wss.ReadBufferSize", ".Router.Wss.WriteBufferSize", ".Router.Forwarder.XgressDialQueueLength", ".Router.Forwarder.XgressDialWorkerCount", ".Router.Forwarder.LinkDialQueueLength", ".Router.Forwarder.LinkDialWorkerCount"}
 	expectedNonEmptyIntValues := []*int{&data.Router.Listener.OutQueueSize, &data.Router.Wss.ReadBufferSize, &data.Router.Wss.WriteBufferSize, &data.Router.Forwarder.XgressDialQueueLength, &data.Router.Forwarder.XgressDialWorkerCount, &data.Router.Forwarder.LinkDialQueueLength, &data.Router.Forwarder.LinkDialWorkerCount}
 	expectedNonEmptyTimeFields := []string{".Router.Listener.ConnectTimeout", "Router.Listener.GetSessionTimeout", ".Router.Wss.WriteTimeout", ".Router.Wss.ReadTimeout", ".Router.Wss.IdleTimeout", ".Router.Wss.PongTimeout", ".Router.Wss.PingInterval", ".Router.Wss.HandshakeTimeout"}
@@ -269,7 +269,7 @@ func TestEdgeRouterIPOverrideIsConsumed(t *testing.T) {
 	externalIP := "123.456.78.9"
 
 	// Set the env variable to non-empty value
-	_ = os.Setenv(constants.ZitiEdgeRouterIPOverrideVarName, externalIP)
+	_ = os.Setenv(constants.RouterIPOverrideVarName, externalIP)
 
 	//useful?	// Check that template value is currently blank
 	//useful?	assert.Equal(t, blank, data.Router.Edge.IPOverride, "Mismatch router IP override, expected %s but got %s", blank, data.Router.Edge.IPOverride)
@@ -287,7 +287,7 @@ func TestEdgeRouterIPOverrideIsConsumed(t *testing.T) {
 			found = true
 		}
 	}
-	assert.True(t, found, "Expected value not found; expected to find value of "+constants.ZitiEdgeRouterIPOverrideVarName+" in edge router config output.")
+	assert.True(t, found, "Expected value not found; expected to find value of "+constants.RouterIPOverrideVarName+" in edge router config output.")
 }
 
 func TestEdgeRouterCsrFields(t *testing.T) {
@@ -303,8 +303,8 @@ func TestEdgeRouterCsrFields(t *testing.T) {
 	assert.Equal(t, "Charlotte", config1.Edge.Csr.Locality)
 	assert.Equal(t, "NetFoundry", data.Router.Edge.CsrO)
 	assert.Equal(t, "NetFoundry", config1.Edge.Csr.Organization)
-	assert.Equal(t, "Ziti", data.Router.Edge.CsrOU)
-	assert.Equal(t, "Ziti", config1.Edge.Csr.OrganizationalUnit)
+	assert.Equal(t, "ZT", data.Router.Edge.CsrOU)
+	assert.Equal(t, "ZT", config1.Edge.Csr.OrganizationalUnit)
 	assert.Contains(t, config1.Edge.Csr.Sans.Dns, hostname)
 
 	C := "C"
@@ -313,12 +313,12 @@ func TestEdgeRouterCsrFields(t *testing.T) {
 	O := "O"
 	OU := "OU"
 	extAddy := "some.external.address"
-	_ = os.Setenv(constants.ZitiEdgeRouterCsrCVarName, C)
-	_ = os.Setenv(constants.ZitiEdgeRouterCsrSTVarName, ST)
-	_ = os.Setenv(constants.ZitiEdgeRouterCsrLVarName, L)
-	_ = os.Setenv(constants.ZitiEdgeRouterCsrOVarName, O)
-	_ = os.Setenv(constants.ZitiEdgeRouterCsrOUVarName, OU)
-	_ = os.Setenv(constants.ZitiRouterCsrSansDnsVarName, extAddy)
+	_ = os.Setenv(constants.RouterCsrCVarName, C)
+	_ = os.Setenv(constants.RouterCsrSTVarName, ST)
+	_ = os.Setenv(constants.RouterCsrLVarName, L)
+	_ = os.Setenv(constants.RouterCsrOVarName, O)
+	_ = os.Setenv(constants.RouterCsrOUVarName, OU)
+	_ = os.Setenv(constants.RouterCsrSansDnsVarName, extAddy)
 
 	config2, data2 := createRouterConfig([]string{"edge", "--routerName", routerName}, routerOptions, nil)
 	// Check that the template values now contains the custom external IP override value

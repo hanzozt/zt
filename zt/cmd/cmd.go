@@ -25,7 +25,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/michaelquigley/pfxlog"
 	edgeSubCmd "github.com/hanzozt/zt/v2/controller/subcmd"
 	"github.com/hanzozt/zt/v2/zt/cmd/ascode/importer"
 	"github.com/hanzozt/zt/v2/zt/cmd/ops"
@@ -33,6 +32,7 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/ops/verify"
 	"github.com/hanzozt/zt/v2/zt/enroll"
 	"github.com/hanzozt/zt/v2/zt/run"
+	"github.com/michaelquigley/pfxlog"
 	"github.com/sirupsen/logrus"
 
 	"github.com/hanzozt/cobra-to-md"
@@ -101,7 +101,7 @@ func init() {
 func NewCmdRoot(in io.Reader, out, err io.Writer, cmd *cobra.Command) *cobra.Command {
 	layout := 1
 
-	if cliVersion := os.Getenv("ZITI_CLI_LAYOUT"); cliVersion == "2" {
+	if cliVersion := os.Getenv("ZT_CLI_LAYOUT"); cliVersion == "2" {
 		layout = 2
 	} else if cliVersion == "1" {
 		layout = 1
@@ -135,7 +135,7 @@ func NewV1CmdRoot(in io.Reader, out, err io.Writer, cmd *cobra.Command) *cobra.C
 		}
 	})
 
-	viper.SetEnvPrefix(c.ZITI) // All env vars we seek will be prefixed with "ZITI_"
+	viper.SetEnvPrefix(c.ZT) // All env vars we seek will be prefixed with "ZT_"
 	viper.AutomaticEnv()
 	replacer := strings.NewReplacer("-", "_") // We use underscores in env var names, but use dashes in flag names
 	viper.SetEnvKeyReplacer(replacer)
@@ -244,7 +244,7 @@ func NewV2CmdRoot(in io.Reader, out, err io.Writer, cmd *cobra.Command) *cobra.C
 		}
 	})
 
-	viper.SetEnvPrefix(c.ZITI) // All env vars we seek will be prefixed with "ZITI_"
+	viper.SetEnvPrefix(c.ZT) // All env vars we seek will be prefixed with "ZT_"
 	viper.AutomaticEnv()
 	replacer := strings.NewReplacer("-", "_") // We use underscores in env var names, but use dashes in flag names
 	viper.SetEnvKeyReplacer(replacer)

@@ -51,7 +51,7 @@ func WorkingDir() (string, error) {
 
 func GetZitiHome() string {
 	// Get path from env variable
-	retVal := os.Getenv(constants.ZitiHomeVarName)
+	retVal := os.Getenv(constants.HomeVarName)
 
 	if retVal == "" {
 		// If not set, create a default path of the current working directory
@@ -61,15 +61,15 @@ func GetZitiHome() string {
 			workingDir = "."
 		}
 
-		_ = os.Setenv(constants.ZitiHomeVarName, workingDir)
-		retVal = os.Getenv(constants.ZitiHomeVarName)
+		_ = os.Setenv(constants.HomeVarName, workingDir)
+		retVal = os.Getenv(constants.HomeVarName)
 	}
 
 	return NormalizePath(retVal)
 }
 
 func HostnameOrNetworkName() string {
-	val := os.Getenv("ZITI_NETWORK_NAME")
+	val := os.Getenv("ZT_NETWORK_NAME")
 	if val == "" {
 		h, err := os.Hostname()
 		if err != nil {
@@ -128,11 +128,11 @@ func GetCtrlEdgeAdvertisedPort() string {
 }
 
 func GetZitiEdgeRouterPort() string {
-	return getFromEnv(constants.ZitiEdgeRouterPortVarName, defaultValue(constants.DefaultZitiEdgeRouterPort))
+	return getFromEnv(constants.RouterPortVarName, defaultValue(constants.DefaultRouterPort))
 }
 
 func GetZitiEdgeRouterListenerBindPort() string {
-	return getFromEnv(constants.ZitiEdgeRouterListenerBindPortVarName, defaultValue(constants.DefaultZitiEdgeRouterListenerBindPort))
+	return getFromEnv(constants.RouterListenerBindPortVarName, defaultValue(constants.DefaultRouterListenerBindPort))
 }
 
 func GetCtrlEdgeIdentityEnrollmentDuration() time.Duration {
@@ -162,23 +162,23 @@ func GetCtrlEdgeRouterEnrollmentDuration() time.Duration {
 }
 
 func GetZitiEdgeRouterC() string {
-	return getFromEnv(constants.ZitiEdgeRouterCsrCVarName, defaultValue(constants.DefaultEdgeRouterCsrC))
+	return getFromEnv(constants.RouterCsrCVarName, defaultValue(constants.DefaultEdgeRouterCsrC))
 }
 
 func GetZitiEdgeRouterST() string {
-	return getFromEnv(constants.ZitiEdgeRouterCsrSTVarName, defaultValue(constants.DefaultEdgeRouterCsrST))
+	return getFromEnv(constants.RouterCsrSTVarName, defaultValue(constants.DefaultEdgeRouterCsrST))
 }
 
 func GetZitiEdgeRouterL() string {
-	return getFromEnv(constants.ZitiEdgeRouterCsrLVarName, defaultValue(constants.DefaultEdgeRouterCsrL))
+	return getFromEnv(constants.RouterCsrLVarName, defaultValue(constants.DefaultEdgeRouterCsrL))
 }
 
 func GetZitiEdgeRouterO() string {
-	return getFromEnv(constants.ZitiEdgeRouterCsrOVarName, defaultValue(constants.DefaultEdgeRouterCsrO))
+	return getFromEnv(constants.RouterCsrOVarName, defaultValue(constants.DefaultEdgeRouterCsrO))
 }
 
 func GetZitiEdgeRouterOU() string {
-	return getFromEnv(constants.ZitiEdgeRouterCsrOUVarName, defaultValue(constants.DefaultEdgeRouterCsrOU))
+	return getFromEnv(constants.RouterCsrOUVarName, defaultValue(constants.DefaultEdgeRouterCsrOU))
 }
 
 type envVarNotFound func() string
@@ -198,14 +198,14 @@ func NormalizePath(input string) string {
 }
 
 func GetRouterAdvertisedAddress() string {
-	return getFromEnv(constants.ZitiEdgeRouterAdvertisedAddressVarName, HostnameOrNetworkName)
+	return getFromEnv(constants.RouterAdvertisedAddressVarName, HostnameOrNetworkName)
 }
 func GetZitiEdgeRouterResolver() string {
-	return getFromEnv(constants.ZitiEdgeRouterResolverVarName, defaultValue(xgress_edge_tunnel.DefaultDnsResolver))
+	return getFromEnv(constants.RouterResolverVarName, defaultValue(xgress_edge_tunnel.DefaultDnsResolver))
 }
 func GetZitiEdgeRouterDnsSvcIpRange() string {
-	return getFromEnv(constants.ZitiEdgeRouterDnsSvcIpRangeVarName, defaultValue(xgress_edge_tunnel.DefaultDnsServiceIpRange))
+	return getFromEnv(constants.RouterDnsSvcIpRangeVarName, defaultValue(xgress_edge_tunnel.DefaultDnsServiceIpRange))
 }
 func GetRouterSans() string {
-	return getFromEnv(constants.ZitiRouterCsrSansDnsVarName, GetRouterAdvertisedAddress)
+	return getFromEnv(constants.RouterCsrSansDnsVarName, GetRouterAdvertisedAddress)
 }

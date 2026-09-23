@@ -77,7 +77,7 @@ var m = &model.Model{
 								ConfigSourceFS: nil,
 								ConfigSource:   "",
 								ConfigName:     "",
-								Version:        os.Getenv("ZITI_VERSION"),
+								Version:        os.Getenv("ZT_VERSION"),
 								LocalPath:      "",
 								DNSNames:       []string{actions.DomainName},
 							},

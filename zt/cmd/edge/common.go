@@ -50,7 +50,7 @@ func mapNameToID(entityType string, val string, o api.Options) (string, error) {
 
 	entity := list[0]
 	entityId, _ := entity.Path("id").Data().(string)
-	if val, found := os.LookupEnv("ZITI_CLI_DEBUG"); found && strings.EqualFold("true", val) {
+	if val, found := os.LookupEnv("ZT_CLI_DEBUG"); found && strings.EqualFold("true", val) {
 		fmt.Printf("Found %v with id %v for name %v\n", entityType, entityId, val)
 	}
 	return entityId, nil
@@ -103,7 +103,7 @@ func mapNamesToIDs(entityType string, o api.Options, skipNotFound bool, list ...
 
 			entityId, _ := list[0].Path("id").Data().(string)
 			result = append(result, entityId)
-			if val, found := os.LookupEnv("ZITI_CLI_DEBUG"); found && strings.EqualFold("true", val) {
+			if val, found := os.LookupEnv("ZT_CLI_DEBUG"); found && strings.EqualFold("true", val) {
 				fmt.Printf("Found %v with id %v for name %v\n", entityType, entityId, val)
 			}
 		}
