@@ -4,7 +4,7 @@ images:
   - name: zt
     context: .
     dockerfile: Dockerfile
-    repo: ghcr.io/hanzozt/zt
+    repo: ghcr.io/hanzoai/zt
     platforms: [linux/amd64, linux/arm64]
     args:
       VERSION: '${VERSION}'
