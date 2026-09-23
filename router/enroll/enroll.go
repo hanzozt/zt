@@ -33,11 +33,11 @@ import (
 	"github.com/hanzozt/zt/v2/router/env"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/michaelquigley/pfxlog"
 	"github.com/hanzozt/edge-api/rest_model"
 	"github.com/hanzozt/identity/certtools"
 	"github.com/hanzozt/sdk-golang/zt"
 	"github.com/hanzozt/sdk-golang/zt/enroll"
+	"github.com/michaelquigley/pfxlog"
 )
 
 type apiPost struct {
@@ -52,9 +52,15 @@ type Enroller interface {
 type RestEnroller struct {
 	fullConfig *env.Config
 	config     *env.EdgeConfig
+
+	// Issuer, when set, replaces the token's issuer as the controller address
+	// enrollment verifies against and posts to. A router beside its controller
+	// enrolls over loopback while the token names the public address, which
+	// may sit behind a TLS-terminating proxy.
+	Issuer string
 }
 
-func NewRestEnroller(config *env.Config) Enroller {
+func NewRestEnroller(config *env.Config) *RestEnroller {
 	return &RestEnroller{
 		fullConfig: config,
 		config:     config.Edge,
@@ -74,7 +80,7 @@ func (re *RestEnroller) Enroll(jwtBuf []byte, silent bool, engine string, keyAlg
 		log.Warnf("identity detected, note that any identity information will be overwritten when enrolling")
 	}
 
-	ec, _, err := enroll.ParseToken(strings.TrimSpace(string(jwtBuf)))
+	ec, err := parseToken(strings.TrimSpace(string(jwtBuf)), re.Issuer)
 	if err != nil {
 		log.WithField("cause", err).Fatal("failed to parse JWT")
 	}
@@ -234,6 +240,22 @@ func (re *RestEnroller) Enroll(jwtBuf []byte, silent bool, engine string, keyAlg
 
 	log.Info("registration complete")
 	return nil
+}
+
+// parseToken verifies an enrollment token against the certificate its issuer
+// serves, reading the issuer from the token unless one is given.
+func parseToken(token, issuer string) (*zt.EnrollmentClaims, error) {
+	if issuer == "" {
+		ec, _, err := enroll.ParseToken(token)
+		return ec, err
+	}
+
+	ec := &zt.EnrollmentClaims{}
+	_, err := jwt.NewParser().ParseWithClaims(token, ec, func(t *jwt.Token) (any, error) {
+		ec.Issuer = issuer
+		return enroll.ValidateToken(t)
+	})
+	return ec, err
 }
 
 func (re *RestEnroller) Send(client *resty.Client, enrollUrl string, e *apiPost) (*rest_model.EnrollmentCertsEnvelope, error) {

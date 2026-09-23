@@ -255,20 +255,7 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 	o.ConfigFile = path.Join(o.instHome(), "ctrl.yaml")
 	routerName := "router-" + o.InstanceID
 
-	//ZT_HOME=/tmp zt create config controller | grep -v "#" | sed -E 's/^ *$//g' | sed '/^$/d'
-	_ = os.Setenv("ZT_HOME", o.Home)
-	pkiLoc := path.Join(o.Home, "pki")
-	rootLoc := path.Join(pkiLoc, "root-ca")
-	pkiIntermediateName := o.scopedName("intermediate-ca")
-	pkiServerName := o.scopedNameOff("server")
-	pkiClientName := o.scopedNameOff("client")
-	intermediateLoc := path.Join(pkiLoc, pkiIntermediateName)
-	_ = os.Setenv("ZT_PKI_CTRL_CA", path.Join(rootLoc, "certs", "root-ca.cert"))
-	_ = os.Setenv("ZT_PKI_CTRL_KEY", path.Join(intermediateLoc, "keys", pkiServerName+".key"))
-	_ = os.Setenv("ZT_PKI_CTRL_SERVER_CERT", path.Join(intermediateLoc, "certs", pkiServerName+".chain.pem"))
-	_ = os.Setenv("ZT_PKI_CTRL_CERT", path.Join(intermediateLoc, "certs", pkiClientName+".chain.pem"))
-	_ = os.Setenv("ZT_PKI_SIGNER_CERT", path.Join(intermediateLoc, "certs", pkiIntermediateName+".cert"))
-	_ = os.Setenv("ZT_PKI_SIGNER_KEY", path.Join(intermediateLoc, "keys", pkiIntermediateName+".key"))
+	o.pkiEnv()
 
 	routerNameFromEnv := os.Getenv(constants.RouterNameVarName)
 	if routerNameFromEnv != "" {
@@ -284,7 +271,7 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 
 		o.CreateMinimalPki()
 
-		_ = os.Setenv("ZT_HOME", o.instHome())
+		_ = os.Setenv(constants.HomeVarName, o.instHome())
 		ctrl := create.NewCmdCreateConfigController()
 		args := []string{
 			fmt.Sprintf("--output=%s", o.ConfigFile),
@@ -487,6 +474,23 @@ func (o *QuickstartOpts) run(ctx context.Context) error {
 	o.cleanupHome()
 	cancel()
 	return nil
+}
+
+// pkiEnv points the config generator at the PKI CreateMinimalPki writes.
+func (o *QuickstartOpts) pkiEnv() {
+	_ = os.Setenv(constants.HomeVarName, o.Home)
+	pkiLoc := path.Join(o.Home, "pki")
+	rootLoc := path.Join(pkiLoc, "root-ca")
+	pkiIntermediateName := o.scopedName("intermediate-ca")
+	pkiServerName := o.scopedNameOff("server")
+	pkiClientName := o.scopedNameOff("client")
+	intermediateLoc := path.Join(pkiLoc, pkiIntermediateName)
+	_ = os.Setenv(constants.PkiCtrlCAVarName, path.Join(rootLoc, "certs", "root-ca.cert"))
+	_ = os.Setenv(constants.PkiCtrlKeyVarName, path.Join(intermediateLoc, "keys", pkiServerName+".key"))
+	_ = os.Setenv(constants.PkiCtrlServerCertVarName, path.Join(intermediateLoc, "certs", pkiServerName+".chain.pem"))
+	_ = os.Setenv(constants.PkiCtrlCertVarName, path.Join(intermediateLoc, "certs", pkiClientName+".chain.pem"))
+	_ = os.Setenv(constants.PkiSignerCertVarName, path.Join(intermediateLoc, "certs", pkiIntermediateName+".cert"))
+	_ = os.Setenv(constants.PkiSignerKeyVarName, path.Join(intermediateLoc, "keys", pkiIntermediateName+".key"))
 }
 
 func (o *QuickstartOpts) printDetails() {

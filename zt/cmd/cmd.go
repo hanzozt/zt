@@ -345,6 +345,25 @@ func NewControllerCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "controller",
 		Short: "Hanzo ZT Controller",
+		Long: `Hanzo ZT Controller
+
+With no subcommand, runs the controller from the environment. On first boot an
+empty ZT_HOME gets its PKI and config; every boot trusts Hanzo IAM as the only
+way in, then runs.
+
+  ZT_HOME                      state directory
+  ZT_CTRL_ADVERTISED_ADDRESS   address clients reach the API at
+  ZT_CTRL_ADVERTISED_PORT      port clients reach the API at (the API listens on 1280)
+  ZT_IAM_ISSUER                IAM issuer, e.g. https://hanzo.id
+  ZT_IAM_JWKS                  IAM JWKS URL
+  ZT_IAM_AUDIENCE              audience tokens must carry; unset accepts any
+  ZT_IAM_ADMINS                comma-separated IAM subjects made admins
+  ZT_ROUTER_NAME               edge router to create; its token goes to ZT_HOME`,
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run.Controller(cmd, run.Options{Verbose: verbose, LogFormatter: logFormatter,
+				CliAgentEnabled: cliAgentEnabled, CliAgentAddr: cliAgentAddr, CliAgentAlias: cliAgentAlias})
+		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if verbose {
 				logrus.SetLevel(logrus.DebugLevel)
@@ -394,6 +413,21 @@ func NewRouterCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "router",
 		Short: "Hanzo ZT Router",
+		Long: `Hanzo ZT Router
+
+With no subcommand, runs the router beside its controller. On first boot it
+waits for the enrollment token the controller writes to ZT_HOME, enrolls over
+loopback and deletes the token, then runs.
+
+  ZT_HOME                        state directory shared with the controller
+  ZT_ROUTER_NAME                 router name
+  ZT_ROUTER_ADVERTISED_ADDRESS   address clients reach the router at
+  ZT_ROUTER_PORT                 port the router listens on and advertises`,
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return run.Router(cmd, run.Options{Verbose: verbose, LogFormatter: logFormatter,
+				CliAgentEnabled: cliAgentEnabled, CliAgentAddr: cliAgentAddr, CliAgentAlias: cliAgentAlias})
+		},
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if verbose {
 				logrus.SetLevel(logrus.DebugLevel)

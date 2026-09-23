@@ -2,7 +2,6 @@
 
 <br>
 
-[![Build Status](https://github.com/hanzoai/zt/actions/workflows/main.yml/badge.svg?query=branch%3Arelease-next)](https://github.com/hanzoai/zt/actions/workflows/main.yml?query=branch%3Arelease-next)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hanzoai/zt)](https://goreportcard.com/report/github.com/hanzoai/zt)
 [![GoDoc](https://godoc.org/github.com/hanzoai/zt?status.svg)](https://pkg.go.dev/github.com/hanzoai/zt)
 [![Discourse Widget](https://img.shields.io/badge/join-us%20on%20discourse-gray.svg?longCache=true&logo=discourse&colorB=brightgreen")](https://community.hanzozt.dev/)
@@ -109,6 +108,23 @@ overlay network quickly and allow you to run it all locally, use Docker or host 
 This environment is perfect for evaluators to get to know Hanzo ZT and the capabilities it offers.  The environment was not
 designed for large scale deployment or for long-term usage. If you are looking for a managed service to help you run a
 truly global, scalable network browse over [the Hanzo AI web site](https://hanzo.ai) to learn more.
+
+## Run
+
+One image, `ghcr.io/hanzozt/zt`, runs either role. In production both run in one
+pod sharing a volume at `/state`: `args: [controller]` and `args: [router]`.
+
+On first boot the controller creates its PKI, config and database, then trusts
+Hanzo IAM as its only way in: an external JWT signer for `ZT_IAM_ISSUER` (keys
+from `ZT_IAM_JWKS`, identity from the token's `sub`), an auth policy admitting
+only that signer, and an admin identity for each subject in `ZT_IAM_ADMINS`.
+The database's default admin has a random password nobody holds, and password
+login is refused by policy. It also creates the edge router named by
+`ZT_ROUTER_NAME` and writes its enrollment token to `/state`; the router role
+enrolls from it over loopback and deletes it. Restarts create only what is
+missing.
+
+`zt controller --help` and `zt router --help` list every variable.
 
 ## Build from Source
 

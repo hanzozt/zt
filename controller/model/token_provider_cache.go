@@ -21,19 +21,20 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 	"sync"
 	"time"
 
 	"github.com/go-openapi/jsonpointer"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/michaelquigley/pfxlog"
 	nfPem "github.com/hanzozt/foundation/v2/pem"
 	"github.com/hanzozt/foundation/v2/stringz"
 	"github.com/hanzozt/jwks"
 	"github.com/hanzozt/storage/boltz"
 	"github.com/hanzozt/zt/v2/controller/apierror"
 	"github.com/hanzozt/zt/v2/controller/db"
+	"github.com/michaelquigley/pfxlog"
 	cmap "github.com/orcaman/concurrent-map/v2"
 	"go.etcd.io/bbolt"
 )
@@ -249,16 +250,10 @@ func (a *TokenIssuerCache) pubKeyLookup(token *jwt.Token) (interface{}, error) {
 		return nil, apierror.NewInvalidAuth()
 	}
 
-	audienceFound := false
-	for _, audience := range audiences {
-		if audience == tokenIssuer.ExpectedAudience() {
-			audienceFound = true
-			break
-		}
-	}
-
-	if !audienceFound {
-		logger.Errorf("token audience does not match expected audience, expected %s, got %s", tokenIssuer.ExpectedAudience(), audiences)
+	// An issuer with no audience accepts every audience it signs for: one IAM
+	// issues tokens to many clients, and issuer plus signature is the check.
+	if expected := tokenIssuer.ExpectedAudience(); expected != "" && !slices.Contains(audiences, expected) {
+		logger.Errorf("token audience does not match expected audience, expected %s, got %s", expected, audiences)
 		return nil, apierror.NewInvalidAuth()
 	}
 
