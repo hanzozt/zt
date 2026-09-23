@@ -59,6 +59,10 @@ func NewTunnelCmd(legacy bool) *cobra.Command {
 	root.PersistentFlags().BoolP("verbose", "v", false, "Enable verbose mode")
 	root.PersistentFlags().StringP("identity", "i", "", "Path to JSON file that contains an enrolled identity")
 	root.PersistentFlags().String("identity-dir", "", "Path to directory file that contains one or more enrolled identities")
+	root.PersistentFlags().String("controller", "", "Controller URL to log in to by IAM token, e.g. https://zt-api.hanzo.ai")
+	root.PersistentFlags().String("token-command", "", "Command, run without a shell, that prints a Hanzo IAM access token to log in with instead of an identity file")
+	root.MarkFlagsRequiredTogether("controller", "token-command")
+	root.MarkFlagsMutuallyExclusive("token-command", "identity", "identity-dir")
 	root.PersistentFlags().Uint(svcPollRateFlag, 15, "Set poll rate for service updates (seconds). Polling in proxy mode is disabled unless this value is explicitly set")
 	root.PersistentFlags().StringP(resolverCfgFlag, "r", "udp://127.0.0.1:53", "Resolver configuration")
 	root.PersistentFlags().String(dnsUpstreamFlag, "", "Upstream DNS server for recursive queries (e.g., udp://10.96.0.10:53 or tcp://8.8.8.8:53)")
@@ -153,7 +157,18 @@ func rootPostRun(cmd *cobra.Command, _ []string) {
 		log.Fatalf("invalid dns service IP range %s: %v", dnsIpRange, err)
 	}
 
-	if idDir := cmd.Flag("identity-dir").Value.String(); idDir != "" {
+	if command := cmd.Flag("token-command").Value.String(); command != "" {
+		controller := strings.TrimSuffix(cmd.Flag("controller").Value.String(), "/")
+		creds, err := newIAM(command)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if creds.CaPool, err = trust(controller); err != nil {
+			log.Fatal(err)
+		}
+		log.Infof("logging in to %s by IAM token", controller)
+		start(cmd, serviceListenerGroup, &zt.Config{ZtAPI: controller + "/edge/client/v1", Credentials: creds})
+	} else if idDir := cmd.Flag("identity-dir").Value.String(); idDir != "" {
 		files, err := os.ReadDir(idDir)
 		if err != nil {
 			log.Fatalf("failed to scan directory %s: %v", idDir, err)
@@ -188,6 +203,11 @@ func startIdentity(cmd *cobra.Command, serviceListenerGroup *intercept.ServiceLi
 	if err != nil {
 		log.Fatalf("failed to load zt configuration from %s: %v", identityJson, err)
 	}
+	start(cmd, serviceListenerGroup, ztCfg)
+}
+
+func start(cmd *cobra.Command, serviceListenerGroup *intercept.ServiceListenerGroup, ztCfg *zt.Config) {
+	log := pfxlog.Logger()
 
 	ztCfg.ConfigTypes = []string{
 		entities.ClientConfigV1,
