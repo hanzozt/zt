@@ -355,8 +355,8 @@ func Test_Authenticate_External_Jwt(t *testing.T) {
 			jwksServer.AddCertificate(validJwksSignerCert2)
 			defer jwksServer.RemoveCertificate(validJwksSignerCert2)
 
-			// allow jwks query timeout to pass (1 request / second)
-			time.Sleep(model.JwksQueryTimeout + 500*time.Millisecond)
+			// a token under an unknown key id may force a fetch once per refetch interval
+			time.Sleep(model.JwksRefetchAfter + 500*time.Millisecond)
 
 			jwtToken := jwt.New(jwt.SigningMethodES256)
 			jwtToken.Claims = jwt.RegisteredClaims{

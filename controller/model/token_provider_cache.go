@@ -695,8 +695,11 @@ func (r *TokenIssuerExtJwt) Resolve(force bool) error {
 		return nil
 
 	} else if r.externalJwtSigner.JwksEndpoint != nil {
-		if (!r.jwksLastRequest.IsZero() && time.Since(r.jwksLastRequest) < JwksQueryTimeout) && !force {
-			return nil
+		if !r.jwksLastRequest.IsZero() {
+			age := time.Since(r.jwksLastRequest)
+			if age < JwksRefetchAfter || (age < JwksCacheFor && !force) {
+				return nil
+			}
 		}
 
 		r.jwksLastRequest = time.Now()
@@ -706,6 +709,10 @@ func (r *TokenIssuerExtJwt) Resolve(force bool) error {
 		if err != nil {
 			return fmt.Errorf("could not resolve jwks endpoint: %v", err)
 		}
+
+		// The fetched set replaces the cached one, so a key the issuer
+		// withdraws stops verifying; a failed fetch keeps the last good set.
+		keys := map[string]IssuerPublicKey{}
 
 		for _, key := range jwksResponse.Keys {
 			//if we have an x509chain the first must be the signing key
@@ -728,7 +735,7 @@ func (r *TokenIssuerExtJwt) Resolve(force bool) error {
 					return fmt.Errorf("no ceritficates parsed")
 				}
 
-				r.kidToPubKey[key.KeyId] = IssuerPublicKey{
+				keys[key.KeyId] = IssuerPublicKey{
 					PubKey: certs[0].PublicKey,
 					Chain:  certs,
 				}
@@ -740,13 +747,14 @@ func (r *TokenIssuerExtJwt) Resolve(force bool) error {
 					return err
 				}
 
-				r.kidToPubKey[key.KeyId] = IssuerPublicKey{
+				keys[key.KeyId] = IssuerPublicKey{
 					PubKey: k,
 				}
 			}
 
 		}
 
+		r.kidToPubKey = keys
 		r.jwksResponse = jwksResponse
 
 		return nil

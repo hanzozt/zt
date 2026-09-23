@@ -35,10 +35,18 @@ const (
 	AuthMethodExtJwt = "ext-jwt"
 	// InternalTokenIssuerClaim is the key for storing the token issuer in JWT claims during verification.
 	InternalTokenIssuerClaim = "-internal-token-issuer"
-	// JwksQueryTimeout is the duration to cache JWKS endpoint responses to reduce network calls.
-	JwksQueryTimeout = 1 * time.Second
 	// MaxCandidateJwtProcessing limits the number of candidate tokens to process during authentication.
 	MaxCandidateJwtProcessing = 2
+)
+
+// How long a signer's key set is trusted before it is fetched again, and how
+// soon a token under an unknown key id may force an early fetch. One issuer
+// serves every login, so a short cache refetches on almost every one and a
+// rate limit at the issuer becomes a login outage; the early fetch is what
+// picks up a newly published key without waiting out the cache.
+var (
+	JwksCacheFor     = 5 * time.Minute
+	JwksRefetchAfter = 10 * time.Second
 )
 
 // AuthTokenVerificationResult extends TokenVerificationResult with authentication context.

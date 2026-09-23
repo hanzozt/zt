@@ -60,6 +60,10 @@ func Test_signerRecord_Resolve(t *testing.T) {
 			jwksResolver: jwksResolver,
 		}
 
+		cacheFor, refetchAfter := JwksCacheFor, JwksRefetchAfter
+		JwksCacheFor, JwksRefetchAfter = 40*time.Millisecond, 10*time.Millisecond
+		t.Cleanup(func() { JwksCacheFor, JwksRefetchAfter = cacheFor, refetchAfter })
+
 		req.NoError(signerRec.Resolve(false))
 		req.Equal(1, jwksResolver.callCount)
 		req.Equal(jwksEndpoint, jwksResolver.callUrls[0])
@@ -74,7 +78,7 @@ func Test_signerRecord_Resolve(t *testing.T) {
 
 			jwksResolver.AddKey(leaf3Key, leaf3KeyPair.key)
 
-			time.Sleep(JwksQueryTimeout)
+			time.Sleep(JwksCacheFor)
 
 			req.NoError(signerRec.Resolve(false))
 
@@ -85,7 +89,7 @@ func Test_signerRecord_Resolve(t *testing.T) {
 		t.Run("asking to resolve twice in succession w/o force does not trigger multiple calls", func(t *testing.T) {
 			req := require.New(t)
 
-			time.Sleep(JwksQueryTimeout)
+			time.Sleep(JwksCacheFor)
 
 			existingCallCount := jwksResolver.callCount
 
@@ -95,17 +99,34 @@ func Test_signerRecord_Resolve(t *testing.T) {
 			req.Equal(existingCallCount+1, jwksResolver.callCount)
 		})
 
-		t.Run("asking to resolve twice in succession with force does trigger multiple calls", func(t *testing.T) {
+		t.Run("a forced resolve fetches early, but not twice within the refetch interval", func(t *testing.T) {
 			req := require.New(t)
 
-			time.Sleep(JwksQueryTimeout)
+			time.Sleep(JwksRefetchAfter)
 
 			existingCallCount := jwksResolver.callCount
 
 			req.NoError(signerRec.Resolve(true))
 			req.NoError(signerRec.Resolve(true))
+			req.Equal(existingCallCount+1, jwksResolver.callCount)
 
+			time.Sleep(JwksRefetchAfter)
+			req.NoError(signerRec.Resolve(true))
 			req.Equal(existingCallCount+2, jwksResolver.callCount)
+		})
+
+		t.Run("a key the issuer withdraws stops verifying on the next fetch", func(t *testing.T) {
+			req := require.New(t)
+
+			withdrawn := jwksResolver.response.Keys[0].KeyId
+			jwksResolver.response.Keys = jwksResolver.response.Keys[1:]
+
+			time.Sleep(JwksCacheFor)
+			req.NoError(signerRec.Resolve(false))
+
+			_, ok := signerRec.PubKeyByKid(withdrawn)
+			req.False(ok, "a withdrawn key is still trusted")
+			req.Len(signerRec.kidToPubKey, len(jwksResolver.response.Keys))
 		})
 	})
 }
