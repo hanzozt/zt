@@ -1,5 +1,5 @@
 # ZT: one image carrying both roles, `zt controller` and `zt router`.
-version: 1.7.4
+version: 1.7.5
 images:
   - name: zt
     context: .
