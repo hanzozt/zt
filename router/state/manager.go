@@ -60,7 +60,21 @@ const (
 	EventRemovedApiSession = "RemovedApiSession"
 
 	DefaultSubscriptionTimeout = 5 * time.Minute
+
+	// subscriptionCheck is how often the router checks its data model subscription.
+	subscriptionCheck = 30 * time.Second
+
+	// subscriptionRenewal is how long before a subscription lapses the router renews it. It
+	// exceeds subscriptionCheck, so a check always lands before the lapse: a lapsed
+	// subscription stops the controller pushing changes until the next check.
+	subscriptionRenewal = 2 * subscriptionCheck
 )
+
+// subscriptionDue reports whether a data model subscription lapsing at timeout is due for
+// renewal at now.
+func subscriptionDue(now, timeout time.Time) bool {
+	return !now.Before(timeout.Add(-subscriptionRenewal))
+}
 
 type RemoveListener func()
 
@@ -493,7 +507,7 @@ func (self *ManagerImpl) GetCurrentDataModelSubscription() DataModelSubscription
 // manageRouterDataModelSubscription handles automatic subscription management
 // for router data model updates, including controller failover and timeout handling.
 func (self *ManagerImpl) manageRouterDataModelSubscription() {
-	ticker := time.NewTicker(30 * time.Second)
+	ticker := time.NewTicker(subscriptionCheck)
 	defer ticker.Stop()
 
 	for {
@@ -539,7 +553,7 @@ func (self *ManagerImpl) checkRouterDataModelSubscription() {
 
 	currentSubscription := self.GetCurrentDataModelSubscription()
 	ctrl := self.env.GetNetworkControllers().GetNetworkController(currentSubscription.CtrlId)
-	if currentSubscription.CtrlId == "" || ctrl == nil || time.Now().After(self.dataModelSubTimeout) {
+	if currentSubscription.CtrlId == "" || ctrl == nil || subscriptionDue(time.Now(), self.dataModelSubTimeout) {
 		if bestCtrl := self.env.GetNetworkControllers().AnyChannel(); bestCtrl != nil {
 			logger := pfxlog.Logger().
 				WithField("ctrlId", bestCtrl.Id()).
@@ -548,7 +562,7 @@ func (self *ManagerImpl) checkRouterDataModelSubscription() {
 			if ctrl == nil {
 				logger.Info("no current data model subscription active, subscribing")
 			} else {
-				logger.Info("current data model subscription expired, resubscribing")
+				logger.Info("current data model subscription due, renewing")
 			}
 			self.subscribeToDataModelUpdates(bestCtrl)
 		}
