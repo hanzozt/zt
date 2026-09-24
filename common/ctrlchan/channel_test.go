@@ -653,3 +653,171 @@ func TestDialCtrlChannel_ReconnectCycle(t *testing.T) {
 		}, 5*time.Second, 10*time.Millisecond, "loop iteration %d, should match channel iteration %d", i, dialChannel.iteration.Load())
 	}
 }
+
+// Test that the controller delivers default-priority messages in the order it sent them while
+// the router also holds a high-priority underlay. The router data model applies change sets by
+// index and discards one that arrives after a later one, so a default message that rides the
+// high-priority underlay can overtake the one before it and be lost.
+func TestListenerCtrlChannel_DefaultTrafficStaysInOrder(t *testing.T) {
+	req := require.New(t)
+
+	listenerAddr := "tcp:127.0.0.1:40006"
+	id := &identity.TokenId{Token: "test-controller"}
+
+	var ctrlSide CtrlChannelUnderlayHandler
+	var ctrlCh channel.MultiChannel
+	var lock sync.Mutex
+
+	multiListener := channel.NewMultiListener(
+		func(underlay channel.Underlay, closeCallback func()) (channel.MultiChannel, error) {
+			lock.Lock()
+			defer lock.Unlock()
+			if ctrlCh != nil && !ctrlCh.IsClosed() {
+				return ctrlCh, nil
+			}
+			ctrlSide = NewListenerCtrlChannel()
+			multiCh, err := channel.NewMultiChannel(&channel.MultiChannelConfig{
+				LogicalName:     "ctrl/" + underlay.ConnectionId(),
+				Options:         channel.DefaultOptions(),
+				UnderlayHandler: ctrlSide,
+				Underlay:        underlay,
+				BindHandler: channel.BindHandlerF(func(binding channel.Binding) error {
+					binding.AddCloseHandler(channel.CloseHandlerF(func(ch channel.Channel) {
+						closeCallback()
+					}))
+					return nil
+				}),
+			})
+			if err != nil {
+				return nil, err
+			}
+			ctrlCh = multiCh
+			return multiCh, nil
+		},
+		func(underlay channel.Underlay) error {
+			return fmt.Errorf("ungrouped connections not supported")
+		},
+	)
+
+	bindAddr, err := transport.ParseAddress(listenerAddr)
+	req.NoError(err)
+
+	listener, err := channel.NewClassicListenerF(id, bindAddr, channel.ListenerConfig{
+		ConnectOptions: channel.DefaultOptions().ConnectOptions,
+	}, multiListener.AcceptUnderlay)
+	req.NoError(err)
+	defer func() { _ = listener.Close() }()
+
+	dialer := channel.NewClassicDialer(channel.DialerConfig{Identity: id, Endpoint: bindAddr})
+
+	headers := channel.Headers{}
+	headers.PutStringHeader(channel.TypeHeader, ChannelTypeDefault)
+	headers.PutBoolHeader(channel.IsGroupedHeader, true)
+	headers.PutBoolHeader(channel.IsFirstGroupConnection, true)
+
+	initialUnderlay, err := dialer.CreateWithHeaders(5*time.Second, headers)
+	req.NoError(err)
+
+	const count = 2000
+	type arrival struct {
+		seq      int
+		underlay string
+	}
+	arrivals := make(chan arrival, count)
+
+	routerCh, err := channel.NewMultiChannel(&channel.MultiChannelConfig{
+		LogicalName: "ctrl/router-order",
+		Options:     channel.DefaultOptions(),
+		UnderlayHandler: NewDialCtrlChannel(DialCtrlChannelConfig{
+			Dialer:                  dialer,
+			MaxDefaultChannels:      1,
+			MaxHighPriorityChannels: 1,
+			UnderlayChangeCallback:  func(ch *DialCtrlChannel, oldCount, newCount uint32) {},
+		}),
+		Underlay:                       initialUnderlay,
+		InjectUnderlayTypeIntoMessages: true,
+		BindHandler: channel.BindHandlerF(func(binding channel.Binding) error {
+			binding.AddReceiveHandlerF(echoContentType, func(m *channel.Message, ch channel.Channel) {
+				underlayType, _ := m.GetStringHeader(channel.UnderlayTypeHeader)
+				seq, _ := m.GetUint64Header(echoContentType)
+				arrivals <- arrival{seq: int(seq), underlay: underlayType}
+			})
+			return nil
+		}),
+	})
+	req.NoError(err)
+	defer func() { _ = routerCh.Close() }()
+
+	req.Eventually(func() bool {
+		lock.Lock()
+		defer lock.Unlock()
+		if ctrlCh == nil {
+			return false
+		}
+		counts := ctrlCh.GetUnderlayCountsByType()
+		return counts[ChannelTypeDefault] == 1 && counts[ChannelTypeHighPriority] == 1
+	}, 10*time.Second, 10*time.Millisecond, "controller should hold a default and a high-priority underlay")
+
+	lock.Lock()
+	sender := ctrlSide.GetDefaultSender()
+	lock.Unlock()
+
+	for i := 0; i < count; i++ {
+		msg := channel.NewMessage(echoContentType, nil)
+		msg.PutUint64Header(echoContentType, uint64(i))
+		req.NoError(sender.Send(msg))
+	}
+
+	for i := 0; i < count; i++ {
+		select {
+		case got := <-arrivals:
+			req.Equal(ChannelTypeDefault, got.underlay, "message %d rode the %s underlay", got.seq, got.underlay)
+			req.Equal(i, got.seq, "message %d arrived in position %d", got.seq, i)
+		case <-time.After(10 * time.Second):
+			req.FailNow("timed out", "received %d of %d messages", i, count)
+		}
+	}
+}
+
+// underlays stands in for a multi-underlay channel, reporting fixed underlay counts.
+type underlays struct {
+	channel.MultiChannel
+	counts map[string]int
+}
+
+func (self underlays) GetUnderlayCountsByType() map[string]int {
+	return self.counts
+}
+
+// Test that high-priority traffic moves to the default underlay as soon as the last
+// high-priority underlay is lost, instead of waiting for the next default message.
+func TestBaseCtrlChannel_HighPriorityFallsBackWhenLost(t *testing.T) {
+	req := require.New(t)
+	ctrl := NewBaseCtrlChannel()
+	ctrl.trackHighPriority(underlays{counts: map[string]int{ChannelTypeDefault: 1, ChannelTypeHighPriority: 1}})
+
+	next := make(chan *channel.Message, 1)
+	go func() {
+		if sendable, err := ctrl.GetNextMsgDefault(channel.NewCloseNotifier()); err == nil {
+			next <- sendable.Msg()
+		}
+	}()
+
+	msg := channel.NewMessage(echoContentType, nil)
+	req.NoError(ctrl.GetHighPrioritySender().Send(msg))
+
+	select {
+	case <-next:
+		req.FailNow("the default underlay took high-priority traffic beside a high-priority underlay")
+	case <-time.After(100 * time.Millisecond):
+	}
+
+	ctrl.trackHighPriority(underlays{counts: map[string]int{ChannelTypeDefault: 1}})
+
+	select {
+	case got := <-next:
+		req.Same(msg, got)
+	case <-time.After(time.Second):
+		req.FailNow("high-priority traffic waited for the next default message")
+	}
+}

@@ -71,6 +71,7 @@ func NewBaseCtrlChannel() *BaseCtrlChannel {
 		defaultMsgChan:      defaultMsgChan,
 		highPriorityMsgChan: highPriorityMsgChan,
 		lowPriorityMsgChan:  lowPriorityMsgChan,
+		highPriorityLost:    make(chan struct{}, 1),
 	}
 	return result
 }
@@ -94,8 +95,9 @@ type BaseCtrlChannel struct {
 	defaultMsgChan      chan channel.Sendable
 	lowPriorityMsgChan  chan channel.Sendable
 
-	hasDefaultChan atomic.Bool
-	underlayCount  atomic.Uint32
+	hasHighPriorityChan atomic.Bool
+	highPriorityLost    chan struct{}
+	underlayCount       atomic.Uint32
 }
 
 func (self *BaseCtrlChannel) ChannelCreated(ch channel.MultiChannel) {
@@ -134,7 +136,25 @@ func (self *BaseCtrlChannel) GetLowPrioritySender() channel.Sender {
 	return self.lowPrioritySender
 }
 
+// GetNextMsgDefault is the message source of a default underlay. The default
+// queue is drained by default underlays alone, so default traffic reaches the
+// peer in the order it was sent: the router data model applies change sets by
+// index and discards one that arrives after a later one. High-priority traffic
+// rides a default underlay only while the channel has no high-priority one.
 func (self *BaseCtrlChannel) GetNextMsgDefault(notifier *channel.CloseNotifier) (channel.Sendable, error) {
+	for self.hasHighPriorityChan.Load() {
+		select {
+		case msg := <-self.defaultMsgChan:
+			return msg, nil
+		case msg := <-self.lowPriorityMsgChan:
+			return msg, nil
+		case <-self.highPriorityLost:
+		case <-self.GetCloseNotify():
+			return nil, io.EOF
+		case <-notifier.GetCloseNotify():
+			return nil, io.EOF
+		}
+	}
 	select {
 	case msg := <-self.defaultMsgChan:
 		return msg, nil
@@ -149,27 +169,16 @@ func (self *BaseCtrlChannel) GetNextMsgDefault(notifier *channel.CloseNotifier) 
 	}
 }
 
+// GetHighPriorityMsg is the message source of a high-priority underlay. It
+// never takes default traffic, which would race the default underlay for it.
 func (self *BaseCtrlChannel) GetHighPriorityMsg(notifier *channel.CloseNotifier) (channel.Sendable, error) {
-	if self.hasDefaultChan.Load() {
-		select {
-		case msg := <-self.highPriorityMsgChan:
-			return msg, nil
-		case <-self.GetCloseNotify():
-			return nil, io.EOF
-		case <-notifier.GetCloseNotify():
-			return nil, io.EOF
-		}
-	} else {
-		select {
-		case msg := <-self.highPriorityMsgChan:
-			return msg, nil
-		case msg := <-self.defaultMsgChan:
-			return msg, nil
-		case <-self.GetCloseNotify():
-			return nil, io.EOF
-		case <-notifier.GetCloseNotify():
-			return nil, io.EOF
-		}
+	select {
+	case msg := <-self.highPriorityMsgChan:
+		return msg, nil
+	case <-self.GetCloseNotify():
+		return nil, io.EOF
+	case <-notifier.GetCloseNotify():
+		return nil, io.EOF
 	}
 }
 
@@ -194,12 +203,23 @@ func (self *BaseCtrlChannel) GetMessageSource(underlay channel.Underlay) channel
 	return self.GetNextMsgDefault
 }
 
-func (self *BaseCtrlChannel) HandleTxFailed(_ channel.Underlay, sendable channel.Sendable) bool {
-	select {
-	case self.defaultMsgChan <- sendable:
-		return true
-	default:
-		return false
+// HandleTxFailed reports a failed send to its sender instead of requeueing it,
+// which would put the message behind ones sent after it.
+func (self *BaseCtrlChannel) HandleTxFailed(channel.Underlay, channel.Sendable) bool {
+	return false
+}
+
+// trackHighPriority records whether the channel holds a high-priority underlay,
+// which decides whether the default underlay also carries high-priority traffic.
+// Losing the last one wakes a default underlay waiting without it, so queued
+// high-priority traffic does not wait for the next default message.
+func (self *BaseCtrlChannel) trackHighPriority(ch channel.MultiChannel) {
+	has := ch.GetUnderlayCountsByType()[ChannelTypeHighPriority] > 0
+	if self.hasHighPriorityChan.Swap(has) && !has {
+		select {
+		case self.highPriorityLost <- struct{}{}:
+		default:
+		}
 	}
 }
 
@@ -298,14 +318,11 @@ func (self *DialCtrlChannel) HandleUnderlayClose(ch channel.MultiChannel, underl
 		WithField("channelClosed", ch.IsClosed()).
 		Info("underlay closed")
 
+	self.trackHighPriority(ch)
+
 	// Track if all underlays are gone so we know to treat next connection as first
 	totalUnderlays := uint32(0)
-	underlayCounts := ch.GetUnderlayCountsByType()
-	if underlayCounts[ChannelTypeDefault] == 0 {
-		self.hasDefaultChan.Store(false)
-	}
-
-	for _, count := range underlayCounts {
+	for _, count := range ch.GetUnderlayCountsByType() {
 		totalUnderlays += uint32(count)
 	}
 	oldCount := self.underlayCount.Swap(totalUnderlays)
@@ -316,11 +333,8 @@ func (self *DialCtrlChannel) HandleUnderlayClose(ch channel.MultiChannel, underl
 	self.constraints.Apply(ch, self)
 }
 
-func (self *DialCtrlChannel) HandleUnderlayAccepted(ch channel.MultiChannel, underlay channel.Underlay) {
-	if underlayType := channel.GetUnderlayType(underlay); underlayType == ChannelTypeDefault {
-		self.hasDefaultChan.Store(true)
-	}
-
+func (self *DialCtrlChannel) HandleUnderlayAccepted(ch channel.MultiChannel, _ channel.Underlay) {
+	self.trackHighPriority(ch)
 	totalUnderlays := uint32(0)
 	for _, count := range ch.GetUnderlayCountsByType() {
 		totalUnderlays += uint32(count)
@@ -409,8 +423,10 @@ func (self *ListenerCtrlChannel) HandleUnderlayClose(ch channel.MultiChannel, un
 		WithField("underlays", ch.GetUnderlayCountsByType()).
 		WithField("underlayType", channel.GetUnderlayType(underlay)).
 		Info("underlay closed")
+	self.trackHighPriority(ch)
 	self.constraints.CheckStateValid(ch, true)
 }
 
-func (self *ListenerCtrlChannel) HandleUnderlayAccepted(channel.MultiChannel, channel.Underlay) {
+func (self *ListenerCtrlChannel) HandleUnderlayAccepted(ch channel.MultiChannel, _ channel.Underlay) {
+	self.trackHighPriority(ch)
 }
