@@ -11,6 +11,8 @@
 
 # Hanzo ZT
 
+[![Open in Hanzo](https://hanzo.app/badges/open-in-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzozt/zt&ref=main&action=open) [![Edit with Hanzo](https://hanzo.app/badges/edit-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzozt/zt&ref=main&action=edit) [![Deploy with Hanzo](https://hanzo.app/badges/deploy-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzozt/zt&ref=main&action=deploy)
+
 Hanzo ZT represents the next generation of secure, open-source networking for your applications. Hanzo ZT has several components.
 
 ## Quick Reference
