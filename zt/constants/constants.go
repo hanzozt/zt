@@ -84,7 +84,7 @@ const (
 	CtrlEdgeAltAdvertisedAddressVarName              = "ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS"
 	CtrlEdgeAltAdvertisedAddressVarDescription       = "The controller's edge API alternative address"
 	CtrlEdgeClientPortVarName                        = "ZT_CTRL_EDGE_CLIENT_PORT"
-	CtrlEdgeClientPortVarDescription                 = "TCP port of a second listener that serves the client API alone, advertised at the first alternative address"
+	CtrlEdgeClientPortVarDescription                 = "TCP port of a second listener that serves only the APIs an identity signs in with, advertised at the first alternative address"
 	CtrlEdgeAdvertisedPortVarName                    = "ZT_CTRL_EDGE_ADVERTISED_PORT"
 	CtrlEdgeAdvertisedPortVarDescription             = "TCP port of the controller's edge API"
 	CtrlDatabaseFileVarName                          = "ZT_CTRL_DATABASE_FILE"

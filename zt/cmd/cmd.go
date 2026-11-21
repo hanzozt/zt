@@ -357,8 +357,9 @@ way in, then runs.
   ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS
                                more names the API is reached at, comma-separated;
                                every boot puts them on the server certificate
-  ZT_CTRL_EDGE_CLIENT_PORT     port of a second listener that serves the client API
-                               alone, at the first of those names; unset, none
+  ZT_CTRL_EDGE_CLIENT_PORT     port of a second listener that serves only the APIs an
+                               identity signs in with, at the first of those names;
+                               unset, none
   ZT_IAM_ISSUER                IAM issuer, e.g. https://hanzo.id
   ZT_IAM_JWKS                  IAM JWKS URL
   ZT_IAM_AUDIENCE              audience tokens must carry; unset accepts any

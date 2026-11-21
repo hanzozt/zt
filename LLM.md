@@ -13,8 +13,10 @@ what the environment adds to it:
 - `ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS`: more names, comma-separated, put on the
   server certificate (`zt/run/certnames`: same key, same CA, new serial).
 - `ZT_CTRL_EDGE_CLIENT_PORT`: a second listener, `client`, on that port at the
-  first of those names. It serves `edge-client` alone (`zt/run/listener`); the
-  management and fabric APIs stay on the first listener. It exists for clients
+  first of those names. It serves `edge-client` and `edge-oidc` alone
+  (`zt/run/listener`): what an identity signs in with, since current SDKs
+  authenticate against the OIDC provider. The management and fabric APIs stay on
+  the first listener. It exists for clients
   that sign in with a certificate and so cannot cross a TLS-terminating proxy:
   they reach this name with the proxy out of the path, and the management API
   never is on it.

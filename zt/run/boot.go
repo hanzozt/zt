@@ -163,10 +163,11 @@ func nameAlternatives() error {
 	return nil
 }
 
-// clientListener serves the client API alone on ZT_CTRL_EDGE_CLIENT_PORT, at the
-// first name in ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS. That is the listener a
-// name with no TLS-terminating proxy in front of it reaches, so it carries what
-// an identity signs in with and nothing of the management API. Unset, the
+// clientListener serves the APIs an identity signs in with on
+// ZT_CTRL_EDGE_CLIENT_PORT, at the first name in
+// ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS. That is the listener a name with no
+// TLS-terminating proxy in front of it reaches, so it carries nothing of the
+// management API. Unset, the
 // controller has the one listener it was first booted with.
 func clientListener(cfg string) error {
 	port := os.Getenv(constants.CtrlEdgeClientPortVarName)
@@ -188,7 +189,7 @@ func clientListener(cfg string) error {
 		return fmt.Errorf("%s: %w", constants.CtrlEdgeClientPortVarName, err)
 	}
 	if changed {
-		pfxlog.Logger().Infof("serving the client API alone at %s on port %s", host, port)
+		pfxlog.Logger().Infof("serving the sign-in APIs alone at %s on port %s", host, port)
 	}
 	return nil
 }

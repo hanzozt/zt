@@ -90,7 +90,7 @@ func bindings(l listenerConfig) []string {
 
 // The new listener serves sign-in and nothing of management, binds beside the
 // first, and is advertised at its own name on the first's port.
-func TestTheListenerServesTheClientAPIAlone(t *testing.T) {
+func TestTheListenerServesWhatAnIdentitySignsInWithAndNothingElse(t *testing.T) {
 	p := config(t)
 	changed, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai")
 	if err != nil || !changed {
@@ -108,8 +108,8 @@ func TestTheListenerServesTheClientAPIAlone(t *testing.T) {
 	if narrow.Name != Name {
 		t.Errorf("name %q", narrow.Name)
 	}
-	if got := bindings(narrow); len(got) != 1 || got[0] != "edge-client" {
-		t.Errorf("the second listener serves %v, want only edge-client", got)
+	if got := strings.Join(bindings(narrow), ","); got != "edge-client,edge-oidc" {
+		t.Errorf("the second listener serves %s, want edge-client,edge-oidc", got)
 	}
 	bp := narrow.BindPoints
 	if len(bp) != 1 || bp[0].Interface != "0.0.0.0:1281" || bp[0].Address != "ctrl.zt.hanzo.ai:443" {

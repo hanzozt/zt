@@ -3,6 +3,7 @@ package run
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/hanzozt/zt/v2/controller/config"
@@ -38,7 +39,7 @@ func bindings(t *testing.T, cfg string) map[string][]string {
 }
 
 // On the config the controller writes at first boot, the client listener is
-// added beside the all-APIs one, serves the client API alone, and the
+// added beside the all-APIs one, serves the sign-in APIs alone, and the
 // controller still loads the file.
 func TestTheClientListenerJoinsTheConfigTheControllerWrote(t *testing.T) {
 	firstBoot(t, "zt-api.hanzo.ai")
@@ -69,8 +70,8 @@ func TestTheClientListenerJoinsTheConfigTheControllerWrote(t *testing.T) {
 	if len(got) != 2 {
 		t.Fatalf("listeners: %v", got)
 	}
-	if client := got["client"]; len(client) != 1 || client[0] != "edge-client" {
-		t.Errorf("the client listener serves %v, want only edge-client", client)
+	if client := strings.Join(got["client"], ","); client != "edge-client,edge-oidc" {
+		t.Errorf("the client listener serves %s, want edge-client,edge-oidc", client)
 	}
 	for _, b := range got["client"] {
 		if b == "edge-management" || b == "fabric" {

@@ -1,5 +1,5 @@
-// Package listener keeps the controller's configuration serving the client API
-// alone on a second port.
+// Package listener keeps the controller's configuration serving the APIs an
+// identity signs in with, and no others, on a second port.
 //
 // A client that signs in with a certificate cannot cross a TLS-terminating
 // proxy, so it reaches the controller by a name of its own, passed through
@@ -23,14 +23,16 @@ import (
 // Name is the listener Ensure keeps.
 const Name = "client"
 
-// binding is the one API the listener serves: sign-in, enrollment, services and
-// sessions for an identity. The management and fabric APIs stay on the first
-// listener.
-const binding = "edge-client"
+// served are the APIs the listener serves, which are what an identity needs
+// to sign in and work: the client API (enrollment, services, sessions) and the
+// OIDC provider current SDKs authenticate against. The management and fabric
+// APIs stay on the first listener.
+var served = []string{"edge-client", "edge-oidc"}
 
 // Ensure makes the web section of the config at path hold a listener named Name
 // that binds port on the same interface as the first listener, is advertised at
-// host on the same port as the first listener, serves only the client API, and
+// host on the same port as the first listener, serves only the APIs an identity
+// signs in with, and
 // takes its identity and options from the first listener. The listener is
 // replaced when it differs and left alone when it does not. The first rewrite
 // keeps the original as path+".orig".
@@ -125,7 +127,11 @@ func narrow(first *yaml.Node, port, host string) (*yaml.Node, error) {
 		"interface", scalar(net.JoinHostPort(bindHost, port)),
 		"address", scalar(net.JoinHostPort(host, advertised)),
 	)))
-	set(l, "apis", sequence(mapping("binding", scalar(binding), "options", &yaml.Node{Kind: yaml.MappingNode, Style: yaml.FlowStyle})))
+	var apis []*yaml.Node
+	for _, b := range served {
+		apis = append(apis, mapping("binding", scalar(b), "options", &yaml.Node{Kind: yaml.MappingNode, Style: yaml.FlowStyle}))
+	}
+	set(l, "apis", sequence(apis...))
 	return l, nil
 }
 
