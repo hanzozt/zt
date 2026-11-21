@@ -142,12 +142,21 @@ func blocks(t *testing.T, data []byte) []*x509.Certificate {
 	}
 }
 
+func (p *pki) roots() *x509.CertPool {
+	pool := x509.NewCertPool()
+	pool.AddCert(p.root)
+	return pool
+}
+
+func (p *pki) inters() *x509.CertPool {
+	pool := x509.NewCertPool()
+	pool.AddCert(p.inter)
+	return pool
+}
+
 func (p *pki) verifies(t *testing.T, leaf *x509.Certificate, name string) {
 	t.Helper()
-	roots, inters := x509.NewCertPool(), x509.NewCertPool()
-	roots.AddCert(p.root)
-	inters.AddCert(p.inter)
-	if _, err := leaf.Verify(x509.VerifyOptions{DNSName: name, Roots: roots, Intermediates: inters}); err != nil {
+	if _, err := leaf.Verify(x509.VerifyOptions{DNSName: name, Roots: p.roots(), Intermediates: p.inters()}); err != nil {
 		t.Fatalf("leaf does not verify for %s: %v", name, err)
 	}
 }
@@ -158,7 +167,7 @@ func TestAnAddedNameIsOnTheSameIdentity(t *testing.T) {
 		before := read(t, p.chain)
 		old := blocks(t, before)[0]
 
-		changed, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{" ctrl.zt.hanzo.ai ", ""})
+		changed, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{" zt-ctrl.hanzo.ai ", ""})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -171,7 +180,7 @@ func TestAnAddedNameIsOnTheSameIdentity(t *testing.T) {
 			t.Fatalf("the chain lost its intermediate: %d certificates", len(got))
 		}
 		leaf := got[0]
-		if want := []string{"localhost", "zt-api.hanzo.ai", "ctrl.zt.hanzo.ai"}; len(leaf.DNSNames) != 3 ||
+		if want := []string{"localhost", "zt-api.hanzo.ai", "zt-ctrl.hanzo.ai"}; len(leaf.DNSNames) != 3 ||
 			leaf.DNSNames[0] != want[0] || leaf.DNSNames[1] != want[1] || leaf.DNSNames[2] != want[2] {
 			t.Fatalf("DNS names %v, want %v", leaf.DNSNames, want)
 		}
@@ -188,7 +197,7 @@ func TestAnAddedNameIsOnTheSameIdentity(t *testing.T) {
 		if leaf.SerialNumber.Cmp(old.SerialNumber) == 0 {
 			t.Fatal("re-issued under the old serial")
 		}
-		p.verifies(t, leaf, "ctrl.zt.hanzo.ai")
+		p.verifies(t, leaf, "zt-ctrl.hanzo.ai")
 		p.verifies(t, leaf, "zt-api.hanzo.ai")
 
 		if only := blocks(t, read(t, p.leafOnly)); len(only) != 1 || !only[0].Equal(leaf) {
@@ -205,12 +214,12 @@ func TestAnAddedNameIsOnTheSameIdentity(t *testing.T) {
 
 func TestANamedCertificateIsLeftAlone(t *testing.T) {
 	p := newPki(t, false)
-	if _, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{"ctrl.zt.hanzo.ai"}); err != nil {
+	if _, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{"zt-ctrl.hanzo.ai"}); err != nil {
 		t.Fatal(err)
 	}
 	once := read(t, p.chain)
 
-	for _, names := range [][]string{{"ctrl.zt.hanzo.ai"}, {"CTRL.zt.hanzo.ai."}, {"zt-api.hanzo.ai", "127.0.0.1"}, {}, {" "}} {
+	for _, names := range [][]string{{"zt-ctrl.hanzo.ai"}, {"ZT-CTRL.hanzo.ai."}, {}, {" "}} {
 		changed, err := Ensure(p.chain, p.interCert, p.interKeyPem, names)
 		if err != nil {
 			t.Fatal(err)
@@ -218,6 +227,38 @@ func TestANamedCertificateIsLeftAlone(t *testing.T) {
 		if changed || !bytes.Equal(read(t, p.chain), once) {
 			t.Fatalf("%q rewrote a certificate that already named it", names)
 		}
+	}
+}
+
+// A name that was asked for and no longer is does not stay as an alias: the
+// certificate carries the names it was first made with and the ones asked for
+// now.
+func TestARenamedNameReplacesTheOldOne(t *testing.T) {
+	p := newPki(t, false)
+	if _, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{"old.hanzo.ai"}); err != nil {
+		t.Fatal(err)
+	}
+	changed, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{"zt-ctrl.hanzo.ai"})
+	if err != nil || !changed {
+		t.Fatalf("changed %v, err %v", changed, err)
+	}
+	leaf := blocks(t, read(t, p.chain))[0]
+	if want := []string{"localhost", "zt-api.hanzo.ai", "zt-ctrl.hanzo.ai"}; len(leaf.DNSNames) != 3 ||
+		leaf.DNSNames[0] != want[0] || leaf.DNSNames[1] != want[1] || leaf.DNSNames[2] != want[2] {
+		t.Fatalf("DNS names %v, want %v", leaf.DNSNames, want)
+	}
+	p.verifies(t, leaf, "zt-ctrl.hanzo.ai")
+	p.verifies(t, leaf, "zt-api.hanzo.ai")
+	if _, err := leaf.Verify(x509.VerifyOptions{DNSName: "old.hanzo.ai", Roots: p.roots(), Intermediates: p.inters()}); err == nil {
+		t.Fatal("the old name still verifies")
+	}
+	if len(leaf.IPAddresses) != 2 || len(leaf.URIs) != 1 {
+		t.Fatalf("lost a first-issue SAN: ips %v uris %v", leaf.IPAddresses, leaf.URIs)
+	}
+
+	again, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{"zt-ctrl.hanzo.ai"})
+	if err != nil || again {
+		t.Fatalf("a second boot wrote: changed %v, err %v", again, err)
 	}
 }
 
@@ -241,7 +282,7 @@ func TestAnIPBecomesAnIPName(t *testing.T) {
 func TestAnAddressIsNotAName(t *testing.T) {
 	p := newPki(t, false)
 	before := read(t, p.chain)
-	for _, n := range []string{"ctrl.zt.hanzo.ai:443", "https://ctrl.zt.hanzo.ai", "ctrl zt"} {
+	for _, n := range []string{"zt-ctrl.hanzo.ai:443", "https://zt-ctrl.hanzo.ai", "ctrl zt"} {
 		if _, err := Ensure(p.chain, p.interCert, p.interKeyPem, []string{n}); err == nil {
 			t.Fatalf("%q was accepted as a host name", n)
 		}
@@ -254,7 +295,7 @@ func TestAnAddressIsNotAName(t *testing.T) {
 func TestAnotherCAMayNotReissue(t *testing.T) {
 	p, other := newPki(t, false), newPki(t, false)
 	before := read(t, p.chain)
-	if _, err := Ensure(p.chain, other.interCert, other.interKeyPem, []string{"ctrl.zt.hanzo.ai"}); err == nil {
+	if _, err := Ensure(p.chain, other.interCert, other.interKeyPem, []string{"zt-ctrl.hanzo.ai"}); err == nil {
 		t.Fatal("a CA that did not issue the leaf re-issued it")
 	}
 	if !bytes.Equal(read(t, p.chain), before) {

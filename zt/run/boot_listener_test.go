@@ -62,7 +62,7 @@ func TestTheClientListenerJoinsTheConfigTheControllerWrote(t *testing.T) {
 		t.Fatal("a port with no name to advertise was accepted")
 	}
 
-	t.Setenv(constants.CtrlEdgeAltAdvertisedAddressVarName, "ctrl.zt.hanzo.ai")
+	t.Setenv(constants.CtrlEdgeAltAdvertisedAddressVarName, "zt-ctrl.hanzo.ai")
 	if err := clientListener(cfg); err != nil {
 		t.Fatal(err)
 	}

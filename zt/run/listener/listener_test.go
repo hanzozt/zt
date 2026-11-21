@@ -92,7 +92,7 @@ func bindings(l listenerConfig) []string {
 // first, and is advertised at its own name on the first's port.
 func TestTheListenerServesWhatAnIdentitySignsInWithAndNothingElse(t *testing.T) {
 	p := config(t)
-	changed, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai")
+	changed, err := Ensure(p, "1281", "zt-ctrl.hanzo.ai")
 	if err != nil || !changed {
 		t.Fatalf("changed=%v err=%v", changed, err)
 	}
@@ -112,7 +112,7 @@ func TestTheListenerServesWhatAnIdentitySignsInWithAndNothingElse(t *testing.T) 
 		t.Errorf("the second listener serves %s, want edge-client,edge-oidc", got)
 	}
 	bp := narrow.BindPoints
-	if len(bp) != 1 || bp[0].Interface != "0.0.0.0:1281" || bp[0].Address != "ctrl.zt.hanzo.ai:443" {
+	if len(bp) != 1 || bp[0].Interface != "0.0.0.0:1281" || bp[0].Address != "zt-ctrl.hanzo.ai:443" {
 		t.Errorf("bindPoints %+v", bp)
 	}
 	for k, v := range all.Identity {
@@ -128,7 +128,7 @@ func TestTheListenerServesWhatAnIdentitySignsInWithAndNothingElse(t *testing.T) 
 // Everything outside the web section is as it was.
 func TestTheRestOfTheConfigIsKept(t *testing.T) {
 	p := config(t)
-	if _, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai"); err != nil {
+	if _, err := Ensure(p, "1281", "zt-ctrl.hanzo.ai"); err != nil {
 		t.Fatal(err)
 	}
 	rest, _ := read(t, p)
@@ -140,11 +140,11 @@ func TestTheRestOfTheConfigIsKept(t *testing.T) {
 // A second boot with the same values writes nothing; a changed value rewrites.
 func TestEveryBootConverges(t *testing.T) {
 	p := config(t)
-	if _, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai"); err != nil {
+	if _, err := Ensure(p, "1281", "zt-ctrl.hanzo.ai"); err != nil {
 		t.Fatal(err)
 	}
 	before, _ := os.ReadFile(p)
-	changed, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai")
+	changed, err := Ensure(p, "1281", "zt-ctrl.hanzo.ai")
 	if err != nil || changed {
 		t.Fatalf("a second boot wrote: changed=%v err=%v", changed, err)
 	}
@@ -153,7 +153,7 @@ func TestEveryBootConverges(t *testing.T) {
 		t.Error("a second boot rewrote the file")
 	}
 
-	changed, err = Ensure(p, "1290", "ctrl.zt.hanzo.ai")
+	changed, err = Ensure(p, "1290", "zt-ctrl.hanzo.ai")
 	if err != nil || !changed {
 		t.Fatalf("a new port was not written: changed=%v err=%v", changed, err)
 	}
@@ -166,10 +166,10 @@ func TestEveryBootConverges(t *testing.T) {
 // The first rewrite keeps the original beside it, and only the first.
 func TestTheOriginalIsKept(t *testing.T) {
 	p := config(t)
-	if _, err := Ensure(p, "1281", "ctrl.zt.hanzo.ai"); err != nil {
+	if _, err := Ensure(p, "1281", "zt-ctrl.hanzo.ai"); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := Ensure(p, "1290", "ctrl.zt.hanzo.ai"); err != nil {
+	if _, err := Ensure(p, "1290", "zt-ctrl.hanzo.ai"); err != nil {
 		t.Fatal(err)
 	}
 	orig, err := os.ReadFile(p + ".orig")

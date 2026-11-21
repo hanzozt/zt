@@ -88,7 +88,7 @@ func TestAnAlternativeNameReachesTheCertificateTheControllerServes(t *testing.T)
 	if err := handshake(t, before, "zt-api.example.test"); err != nil {
 		t.Fatalf("first boot does not serve its own address: %v", err)
 	}
-	if err := handshake(t, before, "ctrl.zt.example.test"); err == nil {
+	if err := handshake(t, before, "zt-ctrl.example.test"); err == nil {
 		t.Fatal("first boot already verifies for the alternative name, so this test proves nothing")
 	}
 
@@ -105,13 +105,13 @@ func TestAnAlternativeNameReachesTheCertificateTheControllerServes(t *testing.T)
 		t.Fatal("no alternative name configured, and the certificate changed")
 	}
 
-	t.Setenv(constants.CtrlEdgeAltAdvertisedAddressVarName, "ctrl.zt.example.test")
+	t.Setenv(constants.CtrlEdgeAltAdvertisedAddressVarName, "zt-ctrl.example.test")
 	if err := nameAlternatives(); err != nil {
 		t.Fatal(err)
 	}
 
 	after := loaded(t)
-	for _, name := range []string{"ctrl.zt.example.test", "zt-api.example.test", "localhost", "127.0.0.1"} {
+	for _, name := range []string{"zt-ctrl.example.test", "zt-api.example.test", "localhost", "127.0.0.1"} {
 		if err := handshake(t, after, name); err != nil {
 			t.Errorf("does not verify for %s after the re-issue: %v", name, err)
 		}
@@ -119,7 +119,7 @@ func TestAnAlternativeNameReachesTheCertificateTheControllerServes(t *testing.T)
 
 	// The OIDC issuers are derived from these chains (controller/webapis/oidc-api.go).
 	chains := after.GetX509ActiveServerCertChains()
-	if len(chains) != 1 || !slices.Contains(chains[0][0].DNSNames, "ctrl.zt.example.test") {
+	if len(chains) != 1 || !slices.Contains(chains[0][0].DNSNames, "zt-ctrl.example.test") {
 		t.Fatalf("the served chain does not name the alternative: %v", chains)
 	}
 	if !chains[0][0].PublicKey.(interface{ Equal(crypto.PublicKey) bool }).Equal(before.GetX509ActiveServerCertChains()[0][0].PublicKey) {

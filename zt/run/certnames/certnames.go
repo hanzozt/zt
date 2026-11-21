@@ -9,9 +9,11 @@
 // server certificate carries, would not answer as an issuer there either.
 //
 // Ensure re-issues the leaf of the server chain from the CA that issued it,
-// for the same public key, carrying every name it already had plus the ones
-// asked for. Nothing else about the certificate changes, the private key is
-// never read, and a certificate that already names everything is left alone.
+// for the same public key, carrying the names the PKI was first made with plus
+// the ones asked for, so a name asked for once and later changed is dropped
+// rather than kept as an alias. Nothing else about the certificate changes, the
+// private key is never read, and a certificate that already names exactly those
+// is left alone.
 package certnames
 
 import (
@@ -30,10 +32,12 @@ import (
 	"time"
 )
 
-// Ensure makes the leaf certificate of the PEM chain at chainPath name every
-// entry of names (a DNS name or an IP address; blanks are ignored), re-issuing
-// it from the CA at signerCertPath and signerKeyPath when it does not. The rest
-// of the chain is kept as it was. A leaf-only copy beside the chain (the same
+// Ensure makes the leaf certificate of the PEM chain at chainPath name the
+// names it was first issued with and every entry of names (a DNS name or an IP
+// address; blanks are ignored), and no other, re-issuing it from the CA at
+// signerCertPath and signerKeyPath when it does not. The first issue is the
+// chain kept as chainPath+".orig" once a name has been added; before that it is
+// the chain itself. The rest of the chain is kept as it was. A leaf-only copy beside the chain (the same
 // name with ".cert" for ".chain.pem") is rewritten too when it holds the same
 // certificate. The first rewrite keeps the original chain as chainPath+".orig".
 //
@@ -63,8 +67,12 @@ func Ensure(chainPath, signerCertPath, signerKeyPath string, names []string) (bo
 		return false, fmt.Errorf("%s: %w", chainPath, err)
 	}
 
-	dns := append([]string(nil), leaf.DNSNames...)
-	ips := append([]net.IP(nil), leaf.IPAddresses...)
+	first, err := firstIssue(chainPath+".orig", leaf)
+	if err != nil {
+		return false, err
+	}
+	dns := append([]string(nil), first.DNSNames...)
+	ips := append([]net.IP(nil), first.IPAddresses...)
 	for _, n := range want.dns {
 		if !containsFold(dns, n) {
 			dns = append(dns, n)
@@ -75,7 +83,7 @@ func Ensure(chainPath, signerCertPath, signerKeyPath string, names []string) (bo
 			ips = append(ips, ip)
 		}
 	}
-	if len(dns) == len(leaf.DNSNames) && len(ips) == len(leaf.IPAddresses) {
+	if sameNames(dns, ips, leaf) {
 		return false, nil
 	}
 
@@ -145,6 +153,50 @@ func Ensure(chainPath, signerCertPath, signerKeyPath string, names []string) (bo
 		return false, err
 	}
 	return true, nil
+}
+
+// firstIssue is the certificate the PKI was first made with: the leaf of the
+// chain kept at orig, when there is one for this key, else leaf itself. A kept
+// chain for another key belongs to a PKI that was made again, and says nothing
+// about this one.
+func firstIssue(orig string, leaf *x509.Certificate) (*x509.Certificate, error) {
+	pemData, err := os.ReadFile(orig)
+	if errors.Is(err, os.ErrNotExist) {
+		return leaf, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	b, _ := pem.Decode(pemData)
+	if b == nil || b.Type != "CERTIFICATE" {
+		return nil, fmt.Errorf("%s: the first PEM block is not a certificate", orig)
+	}
+	first, err := x509.ParseCertificate(b.Bytes)
+	if err != nil {
+		return nil, fmt.Errorf("%s: %w", orig, err)
+	}
+	if k, ok := leaf.PublicKey.(interface{ Equal(crypto.PublicKey) bool }); !ok || !k.Equal(first.PublicKey) {
+		return leaf, nil
+	}
+	return first, nil
+}
+
+// sameNames reports whether leaf names exactly dns and ips.
+func sameNames(dns []string, ips []net.IP, leaf *x509.Certificate) bool {
+	if len(dns) != len(leaf.DNSNames) || len(ips) != len(leaf.IPAddresses) {
+		return false
+	}
+	for _, n := range dns {
+		if !containsFold(leaf.DNSNames, n) {
+			return false
+		}
+	}
+	for _, ip := range ips {
+		if !containsIP(leaf.IPAddresses, ip) {
+			return false
+		}
+	}
+	return true
 }
 
 type wanted struct {
