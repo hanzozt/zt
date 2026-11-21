@@ -23,3 +23,22 @@ what the environment adds to it:
 
 Neither variable set, nothing changes. Hanzo's production values and routes:
 `hanzo-inc/universe` `infra/aws/k8s/zt.yaml` and `infra/aws/routes`.
+
+## Publishing the image
+
+The push-to-main lane (`.github/workflows/cicd.yml`) gates green here and then
+stops at "Delegate build": the hanzozt org holds no `KMS_CLIENT_ID` and
+`KMS_CLIENT_SECRET`, so the run cannot mint the token the build door takes. Until it
+does, an image goes through the door by hand, as org `hanzo`:
+
+    POST https://api.hanzo.ai/v1/build   (X-Org-Id: hanzo)
+    {"repo":"https://github.com/hanzozt/zt","sha":"<full sha>",
+     "image":"ghcr.io/hanzoai/zt:<version>","tags":["sha-<short>-amd64"],
+     "dockerfile":"Dockerfile","context":".","platforms":["linux/amd64"],
+     "args":{"VERSION":"<version>","REVISION":"<full sha>"}}
+
+The binary reports its VERSION from the tag of `image`, so that tag is the bare
+version (`1.7.8`), never `sha-…`. Build `linux/amd64` only: the cluster's nodes are
+amd64, and the door's arm64 job dies in its `forge-identity` init with
+`exec /cloud: exec format error`. Pin the digest it answers with in
+`hanzo-inc/universe` `infra/aws/k8s/zt.yaml`.
