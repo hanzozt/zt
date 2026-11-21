@@ -27,6 +27,7 @@ import (
 	"github.com/hanzozt/zt/v2/zt/cmd/create"
 	"github.com/hanzozt/zt/v2/zt/constants"
 	"github.com/hanzozt/zt/v2/zt/run/certnames"
+	"github.com/hanzozt/zt/v2/zt/run/listener"
 	"github.com/michaelquigley/pfxlog"
 	"github.com/spf13/cobra"
 )
@@ -100,6 +101,9 @@ func Controller(cmd *cobra.Command, opts Options) error {
 	if err := nameAlternatives(); err != nil {
 		return err
 	}
+	if err := clientListener(cfg); err != nil {
+		return err
+	}
 
 	if err := seed(cfg, issuer, jwks, os.Getenv(iamAudience), admins, os.Getenv(constants.RouterNameVarName), home); err != nil {
 		return err
@@ -155,6 +159,36 @@ func nameAlternatives() error {
 	}
 	if changed {
 		pfxlog.Logger().Infof("server certificate re-issued to name %s as well", alt)
+	}
+	return nil
+}
+
+// clientListener serves the client API alone on ZT_CTRL_EDGE_CLIENT_PORT, at the
+// first name in ZT_CTRL_EDGE_ALT_ADVERTISED_ADDRESS. That is the listener a
+// name with no TLS-terminating proxy in front of it reaches, so it carries what
+// an identity signs in with and nothing of the management API. Unset, the
+// controller has the one listener it was first booted with.
+func clientListener(cfg string) error {
+	port := os.Getenv(constants.CtrlEdgeClientPortVarName)
+	if port == "" {
+		return nil
+	}
+	var host string
+	for _, n := range strings.Split(os.Getenv(constants.CtrlEdgeAltAdvertisedAddressVarName), ",") {
+		if host = strings.TrimSpace(n); host != "" {
+			break
+		}
+	}
+	if host == "" {
+		return fmt.Errorf("%s needs a name in %s to advertise", constants.CtrlEdgeClientPortVarName,
+			constants.CtrlEdgeAltAdvertisedAddressVarName)
+	}
+	changed, err := listener.Ensure(cfg, port, host)
+	if err != nil {
+		return fmt.Errorf("%s: %w", constants.CtrlEdgeClientPortVarName, err)
+	}
+	if changed {
+		pfxlog.Logger().Infof("serving the client API alone at %s on port %s", host, port)
 	}
 	return nil
 }
